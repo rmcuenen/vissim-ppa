@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<configuratie xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:noNamespaceSchemaLocation="vissim-ppa.xsd">
+  <ppawegkant>http://192.168.50.102:80</ppawegkant>
+  <data>
+    <vri id="AMS.987">C:\data\vlog\kr987</vri>
+    <tdi id="RWSNWN.00104">C:\data\mv\000104</tdi>
+    <mtm id="RWSNWN.12345">C:\data\mtm\8001</mtm>
+  </data>
+</configuratie>
+
