@@ -11,10 +11,9 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.slf4j.Logger;
 
 /**
  *
@@ -26,6 +25,7 @@ public abstract class DataProcessor {
     private static final String ADDRESS_PREFIX = "ppawegkant/";
     private static final String DATE_TIME_MATCHER = "_[0-9]{6}_[0-9]{6}\\.";
     private static final DateFormat DATE_TIME_FORMATTER = new SimpleDateFormat("_yyyyMMdd_HHmmss.");
+    protected Logger logger;
 
     protected DataProcessor() {
         // Abstract super constructor
@@ -35,6 +35,7 @@ public abstract class DataProcessor {
             InputStream dataStream, SystemData context) throws IOException;
 
     protected Message newMessage(String address, byte[] message) {
+        logger.debug("Creeër nieuw bericht voor {}", address);
         try {
             Message msg = new Message();
             URL url = new URL(MainApplication.getURL()
@@ -48,14 +49,15 @@ public abstract class DataProcessor {
         }
     }
 
-    protected long toTimestamp(String filname) {
+    protected long toTimestamp(String filename) {
         try {
             Pattern p = Pattern.compile(DATE_TIME_MATCHER);
-            Matcher m = p.matcher(filname);
+            Matcher m = p.matcher(filename);
             Date date = DATE_TIME_FORMATTER.parse(m.group());
             return date.getTime();
         } catch (ParseException ex) {
-            // Log error message
+            logger.error("Bestand {} voldoet niet aan het verwachte tijdsformaat",
+                    filename);
         }
         return 0L;
     }

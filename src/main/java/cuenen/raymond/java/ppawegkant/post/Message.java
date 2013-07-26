@@ -20,7 +20,7 @@ public class Message {
             try {
                 nofRetries = Integer.parseInt(value);
             } catch (NumberFormatException ex) {
-                // Log warning message
+                // Ignore
             }
         }
     }

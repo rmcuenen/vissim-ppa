@@ -17,6 +17,9 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
+import org.apache.log4j.PropertyConfigurator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 
@@ -33,10 +36,13 @@ public class MainApplication {
 
         @Override
         public void run() {
+            MainApplication.logger.info("Stoppen van de applicatie");
             for (DirectoryWatcher watcher : MainApplication.direcoryWatchers) {
                 watcher.stop();
             }
-            MainApplication.messageSender.shutdown();
+            if (MainApplication.messageSender != null) {
+                MainApplication.messageSender.shutdown();
+            }
         }
 
         @Override
@@ -48,10 +54,12 @@ public class MainApplication {
     private static final String DEFAULT_CONF_DIR = "conf";
     private static final String CONFIGURATION_FILE = "configuration.xml";
     private static final String SETTINGS_FILE = "settings.properties";
+    private static final String LOG_FILE = "log4j.properties";
     private static final String XSD = "/schema/vissim-ppa.xsd";
     private static final Collection<DirectoryWatcher> direcoryWatchers = new HashSet<DirectoryWatcher>();
     private static final Properties settings = new Properties();
-    private static final MessageSender messageSender = new MessageSender();
+    private static MessageSender messageSender;
+    private static Logger logger;
     private static String baseURL;
 
     public static void main(String[] args) {
@@ -64,25 +72,17 @@ public class MainApplication {
             if (!baseURL.endsWith("/")) {
                 baseURL += "/";
             }
-            Collection<String> systems = new HashSet<String>();
-            Collection<File> directories = new HashSet<File>();
+            logger.debug("Gevonden PPA-bus URL: {}", baseURL);
             for (SystemData data : configuration.getData()) {
-                String id = data.getIdentification();
-                File dir = data.getDirectory();
-                if (systems.contains(id)) {
-                    throw new Exception(id
-                            + " komt meerdere keren voor");
-                } else if (directories.contains(dir)) {
-                    throw new Exception(dir
-                            + " is meerdere keren geconfigureerd");
-                }
+                logger.debug("Nieuwe directory bewaker voor {} op {}",
+                        data.getIdentification(), data.getDirectory());
                 direcoryWatchers.add(new DirectoryWatcher(data));
-                systems.add(id);
-                directories.add(dir);
             }
         } catch (Exception ex) {
             onError("Fout tijdens het initialiseren van de applicaie", ex);
         }
+        logger.info("Starten van de applicatie");
+        messageSender = new MessageSender();
         for (DirectoryWatcher watcher : direcoryWatchers) {
             watcher.start();
         }
@@ -102,7 +102,9 @@ public class MainApplication {
 
     private static Configuration readConfiguration() throws Exception {
         String cfgDir = System.getProperty(CONF_DIR_KEY, DEFAULT_CONF_DIR);
+        initializeLogging(cfgDir);
         File settingsFile = new File(cfgDir, SETTINGS_FILE);
+        logger.debug("Zoeken naar applicatie settings: {}", settingsFile);
         if (settingsFile.exists()) {
             settings.load(new FileReader(settingsFile));
         }
@@ -111,11 +113,13 @@ public class MainApplication {
         Schema schema = schemaFactory.newSchema(MainApplication.class.getResource(XSD));
         Unmarshaller um = ctx.createUnmarshaller();
         um.setSchema(schema);
-        return (Configuration) um.unmarshal(
-                new FileReader(new File(cfgDir, CONFIGURATION_FILE)));
+        File configFile = new File(cfgDir, CONFIGURATION_FILE);
+        logger.debug("Zoeken naar applicatie configuratie: {}", configFile);
+        return (Configuration) um.unmarshal(new FileReader(configFile));
     }
 
     private static void onError(String message, Throwable e) {
+        logger.error(message, e);
         StringBuilder msg = new StringBuilder("<html>");
         msg.append("<b>").append(message).append("</b>");
         String info = e.getLocalizedMessage();
@@ -126,6 +130,16 @@ public class MainApplication {
         JOptionPane.showMessageDialog(null, msg,
                 e.getClass().getName(), JOptionPane.ERROR_MESSAGE);
         System.exit(1);
+    }
+
+    private static void initializeLogging(String cfgDir) {
+        File logFile = new File(cfgDir, LOG_FILE);
+        PropertyConfigurator.configure(logFile.getPath());
+        if (System.console() == null) {
+            org.apache.log4j.Logger.getRootLogger().removeAppender("stdout");
+
+        }
+        logger = LoggerFactory.getLogger(MainApplication.class);
     }
 
     private MainApplication() {

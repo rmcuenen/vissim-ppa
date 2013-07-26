@@ -87,4 +87,24 @@ public abstract class SystemData {
     public void setIdentification(String identification) {
         this.identification = identification;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof SystemData) {
+            SystemData that = (SystemData) obj;
+            return (this.directory == null ? that.directory == null
+                    : this.directory.equals(that.directory))
+                    && (this.identification == null ? that.identification == null
+                    : this.identification.equals(that.identification));
+        }
+        return super.equals(obj);
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 67 * hash + (this.directory != null ? this.directory.hashCode() : 0);
+        hash = 67 * hash + (this.identification != null ? this.identification.hashCode() : 0);
+        return hash;
+    }
 }

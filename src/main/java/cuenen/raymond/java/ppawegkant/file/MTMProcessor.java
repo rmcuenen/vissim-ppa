@@ -10,6 +10,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -20,11 +21,12 @@ public class MTMProcessor extends DataProcessor {
     private static final String ADDRESS = "data/hwn/tenuki";
 
     public MTMProcessor() {
-        super();
+        logger = LoggerFactory.getLogger(MTMProcessor.class);
     }
 
     @Override
     public Message process(String filename, InputStream dataStream, SystemData context) throws IOException {
+        logger.debug("Verwerking van bestand {} voor {}", filename, context.getIdentification());
         long timestamp = toTimestamp(filename);
         List<String> raaien = new ArrayList<String>();
         BufferedReader reader = new BufferedReader(new InputStreamReader(dataStream));

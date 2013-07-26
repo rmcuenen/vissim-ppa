@@ -3,9 +3,12 @@ package cuenen.raymond.java.ppawegkant.post;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -16,6 +19,7 @@ public class MessageSender implements Runnable {
     private static final String POST_METHOD = "POST";
     private static final String CONTENT_TYPE_KEY = "Content-Type";
     private static final String CONTENT_LENGTH_KEY = "Content-Length";
+    private final Logger logger = LoggerFactory.getLogger(MessageSender.class);
     private final BlockingQueue<Message> messageQueue = new ArrayBlockingQueue<Message>(1024);
     private final AtomicBoolean running = new AtomicBoolean(false);
     private Thread queueThread;
@@ -31,7 +35,7 @@ public class MessageSender implements Runnable {
                 messageQueue.put(message);
                 failed = false;
             } catch (InterruptedException ex) {
-                // Log debug message
+                logger.debug("Toevoegen van een bericht was onderbroken");
             }
         } while (failed);
     }
@@ -42,8 +46,9 @@ public class MessageSender implements Runnable {
             queueThread.interrupt();
             try {
                 queueThread.join(5000L);
+                logger.info("Het verzenden van berichten is gestopt");
             } catch (InterruptedException ex) {
-                // Log warning message
+                logger.warn("Fout tijdens het stoppen van " + queueThread.getName());
             }
             queueThread = null;
         }
@@ -57,7 +62,7 @@ public class MessageSender implements Runnable {
             try {
                 msg = messageQueue.take();
             } catch (InterruptedException ex) {
-                // Log debug message
+                logger.debug("Ophalen van een bericht was onderbroken");
             }
             if (msg != null) {
                 sendMessage(msg);
@@ -68,13 +73,16 @@ public class MessageSender implements Runnable {
     private void initialize() {
         queueThread = new Thread(this, "Message-Queue-Thread");
         queueThread.start();
+        logger.info("Begin verzenden van berichten");
     }
 
     private void sendMessage(Message message) {
+        URL url = message.getAddress();
         byte[] msg = message.getMessage();
         HttpURLConnection conn = null;
         try {
-            conn = (HttpURLConnection) message.getAddress().openConnection();
+            logger.debug("Poging een bericht te posten op {}", url);
+            conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod(POST_METHOD);
             conn.setRequestProperty(CONTENT_TYPE_KEY, message.getContentType());
             conn.setRequestProperty(CONTENT_LENGTH_KEY, Integer.toString(msg.length));
@@ -86,7 +94,7 @@ public class MessageSender implements Runnable {
             output.flush();
             int response = conn.getResponseCode();
             if (200 != response) {
-                throw new IOException("Got an " + response);
+                throw new IOException("Got response code " + response);
             }
         } catch (IOException ex) {
             onFailure(message, ex);
@@ -99,10 +107,10 @@ public class MessageSender implements Runnable {
 
     private void onFailure(Message message, IOException ex) {
         if (message.resendOnFailure()) {
-            // Log warning message
-            addMessage(message);
+            logger.warn("Verzenden mislukt, opnieuw...", ex);
+            sendMessage(message);
         } else {
-            // Log error message
+            logger.error("Fout tijdens het posten van een bericht", ex);
         }
     }
 }

@@ -6,6 +6,7 @@ import cuenen.raymond.java.ppawegkant.processing.DataProcessor;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import org.slf4j.LoggerFactory;
 import sun.misc.BASE64Encoder;
 
 /**
@@ -18,11 +19,12 @@ public class MVProcessor extends DataProcessor {
     private final BASE64Encoder encoder = new BASE64Encoder();
 
     public MVProcessor() {
-        super();
+        logger = LoggerFactory.getLogger(MVProcessor.class);
     }
 
     @Override
     public Message process(String filename, InputStream dataStream, SystemData context) throws IOException {
+        logger.debug("Verwerking van bestand {} voor {}", filename, context.getIdentification());
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         byte[] tmp = new byte[1024];
         int read;

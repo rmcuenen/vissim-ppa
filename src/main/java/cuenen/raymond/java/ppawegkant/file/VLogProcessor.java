@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -19,12 +20,12 @@ public class VLogProcessor extends DataProcessor {
     private static final String ADDRESS = "data/vri/vlog";
 
     public VLogProcessor() {
-        super();
+        logger = LoggerFactory.getLogger(VLogProcessor.class);
     }
 
     @Override
     public Message process(String filename, InputStream dataStream, SystemData context) throws IOException {
-        // Log debug message
+        logger.debug("Verwerking van bestand {} voor {}", filename, context.getIdentification());
         List<String> vlogContent = new ArrayList<String>();
         BufferedReader reader = new BufferedReader(new InputStreamReader(dataStream));
         String line;

@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -33,11 +34,12 @@ public class RTProcessor extends DataProcessor {
     }
 
     public RTProcessor() {
-        super();
+        logger = LoggerFactory.getLogger(RTProcessor.class);
     }
 
     @Override
     public Message process(String filename, InputStream dataStream, SystemData context) throws IOException {
+        logger.debug("Verwerking van bestand {} voor {}", filename, context.getIdentification());
         long timestamp = toTimestamp(filename);
         Map<String, String> content = new HashMap<String, String>();
         BufferedReader reader = new BufferedReader(new InputStreamReader(dataStream));

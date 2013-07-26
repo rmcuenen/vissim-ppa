@@ -10,19 +10,22 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.concurrent.atomic.AtomicBoolean;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author R. Cuenen
  */
 public class DirectoryWatcher implements Runnable, FilenameFilter {
-
+    
     private static final String FILE_NAME_MATCHER = ".*_[0-9]{6}_[0-9]{6}\\..*";
+    private final Logger logger = LoggerFactory.getLogger(DirectoryWatcher.class);
     private final SystemData systemData;
     private final AtomicBoolean watching = new AtomicBoolean(false);
     private long pollInterval = 1000L;
     private Thread watchThread;
-
+    
     public DirectoryWatcher(SystemData systemData) {
         this.systemData = systemData;
         String value = MainApplication.getProperty("poll_interval");
@@ -30,36 +33,37 @@ public class DirectoryWatcher implements Runnable, FilenameFilter {
             try {
                 pollInterval = Long.parseLong(value);
             } catch (NumberFormatException ex) {
-                // Log warning message
+                logger.warn("Een getal voor 'poll_interval' is verwacht", ex);
             }
         }
     }
-
+    
     public void start() {
         if (watchThread == null) {
             watchThread = new Thread(this, systemData.getIdentification() + "-Watch-Thread");
             watchThread.start();
-            // Log debug message
+            logger.info("Begin pollen voor {} in {}", systemData.getIdentification(), systemData.getDirectory());
         }
     }
-
+    
     public void stop() {
         watching.set(false);
         if (watchThread != null) {
             watchThread.interrupt();
             try {
                 watchThread.join(3000L);
-                // Log debug messsage
+                logger.info("Het pollen van {} is gestopt", systemData.getDirectory());
             } catch (InterruptedException ex) {
-                // Log warning message
+                logger.warn("Fout tijdens het stoppen van " + watchThread.getName());
             }
             watchThread = null;
         }
     }
-
+    
     @Override
     public void run() {
         File directory = systemData.getDirectory();
+        directory.mkdirs();
         watching.set(true);
         do {
             File[] list = directory.listFiles(this);
@@ -71,12 +75,12 @@ public class DirectoryWatcher implements Runnable, FilenameFilter {
             sleep(pollInterval);
         } while (watching.get());
     }
-
+    
     @Override
     public boolean accept(File dir, String name) {
         return name.matches(FILE_NAME_MATCHER);
     }
-
+    
     private void sleep(long time) {
         do {
             long current = System.nanoTime();
@@ -88,9 +92,9 @@ public class DirectoryWatcher implements Runnable, FilenameFilter {
             time -= (System.nanoTime() - current);
         } while (time > 0L);
     }
-
+    
     private void handleFile(File file) {
-        // Log debug message
+        logger.debug("Nieuw bestand gevonden: {}", file);
         long diff = 0L;
         do {
             long lastModified = file.lastModified();
@@ -107,7 +111,7 @@ public class DirectoryWatcher implements Runnable, FilenameFilter {
             }
             file.delete();
         } catch (IOException ex) {
-            // Log error message
+            logger.error("Fout tijdens het verwerken van bestand " + file, ex);
         } finally {
             if (dataStream != null) {
                 try {
