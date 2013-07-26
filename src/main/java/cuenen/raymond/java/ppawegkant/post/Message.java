@@ -11,7 +11,7 @@ public class Message {
 
     private URL address;
     private String contentType;
-    private String message;
+    private byte[] message;
     private int nofRetries = 0;
 
     public Message() {
@@ -41,11 +41,12 @@ public class Message {
         return contentType;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public void setMessage(byte[] message) {
+        this.message = new byte[message.length];
+        System.arraycopy(message, 0, this.message, 0, message.length);
     }
 
-    public String getMessage() {
+    public byte[] getMessage() {
         return message;
     }
 

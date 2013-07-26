@@ -7,7 +7,7 @@
       <xsd:element name="ppawegkant" type="xsd:string"/>
       <xsd:element name="data" type="SystemData"/>
     </xsd:sequence>
-  <xsd:complexType>
+  </xsd:complexType>
 
   <xsd:complexType name="SystemData">
     <xsd:choice>
@@ -15,15 +15,15 @@
       <xsd:element name="tdi-rt" type="SystemType" maxOccurs="unbounded"/>
       <xsd:element name="vri" type="SystemType" maxOccurs="unbounded"/>
       <xsd:element name="mtm" type="SystemType" maxOccurs="unbounded"/>
-    <xsd:choice>
+    </xsd:choice>
   </xsd:complexType>
 
   <xsd:complexType name="SystemType">
     <xsd:simpleContent>
       <xsd:extension base="xsd:string">
-        <xsd:attribute name="id" type="xs:string" use="required"/>
+        <xsd:attribute name="id" type="xsd:string" use="required"/>
       </xsd:extension>
     </xsd:simpleContent>
   </xsd:complexType>
-</xs:schema>
+</xsd:schema>
 

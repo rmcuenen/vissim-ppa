@@ -17,18 +17,29 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class DirectoryWatcher implements Runnable, FilenameFilter {
 
+    private static final String FILE_NAME_MATCHER = ".*_[0-9]{6}_[0-9]{6}\\..*";
     private final SystemData systemData;
     private final AtomicBoolean watching = new AtomicBoolean(false);
+    private long pollInterval = 1000L;
     private Thread watchThread;
 
     public DirectoryWatcher(SystemData systemData) {
         this.systemData = systemData;
+        String value = MainApplication.getProperty("poll_interval");
+        if (value != null) {
+            try {
+                pollInterval = Long.parseLong(value);
+            } catch (NumberFormatException ex) {
+                // Log warning message
+            }
+        }
     }
 
     public void start() {
         if (watchThread == null) {
             watchThread = new Thread(this, systemData.getIdentification() + "-Watch-Thread");
             watchThread.start();
+            // Log debug message
         }
     }
 
@@ -38,6 +49,7 @@ public class DirectoryWatcher implements Runnable, FilenameFilter {
             watchThread.interrupt();
             try {
                 watchThread.join(3000L);
+                // Log debug messsage
             } catch (InterruptedException ex) {
                 // Log warning message
             }
@@ -47,15 +59,6 @@ public class DirectoryWatcher implements Runnable, FilenameFilter {
 
     @Override
     public void run() {
-        long interval = 1000L;
-        String value = MainApplication.getProperty("poll_interval");
-        if (value != null) {
-            try {
-                interval = Long.parseLong(value);
-            } catch (NumberFormatException ex) {
-                // Log warning message
-            }
-        }
         File directory = systemData.getDirectory();
         watching.set(true);
         do {
@@ -65,13 +68,13 @@ public class DirectoryWatcher implements Runnable, FilenameFilter {
                     handleFile(file);
                 }
             }
-            sleep(interval);
+            sleep(pollInterval);
         } while (watching.get());
     }
 
     @Override
     public boolean accept(File dir, String name) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return name.matches(FILE_NAME_MATCHER);
     }
 
     private void sleep(long time) {
@@ -87,23 +90,32 @@ public class DirectoryWatcher implements Runnable, FilenameFilter {
     }
 
     private void handleFile(File file) {
+        // Log debug message
         long diff = 0L;
         do {
             long lastModified = file.lastModified();
             sleep(100L);
             diff = file.lastModified() - lastModified;
         } while (diff > 0L);
+        InputStream dataStream = null;
         try {
-            InputStream dataStream = new FileInputStream(file);
+            dataStream = new FileInputStream(file);
             DataProcessor processor = systemData.getType().getDataProcessor();
             Message message = processor.process(file.getName(), dataStream, systemData);
             if (message != null) {
                 MainApplication.sendMessage(message);
             }
-            dataStream.close();
             file.delete();
         } catch (IOException ex) {
             // Log error message
+        } finally {
+            if (dataStream != null) {
+                try {
+                    dataStream.close();
+                } catch (IOException ex) {
+                    // Ignore
+                }
+            }
         }
     }
 }

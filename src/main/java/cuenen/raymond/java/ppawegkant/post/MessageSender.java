@@ -71,7 +71,7 @@ public class MessageSender implements Runnable {
     }
 
     private void sendMessage(Message message) {
-        byte[] msg = message.getMessage().getBytes();
+        byte[] msg = message.getMessage();
         HttpURLConnection conn = null;
         try {
             conn = (HttpURLConnection) message.getAddress().openConnection();
