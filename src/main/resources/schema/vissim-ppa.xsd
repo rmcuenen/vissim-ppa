@@ -11,7 +11,8 @@
 
   <xsd:complexType name="SystemData">
     <xsd:choice>
-      <xsd:element name="tdi" type="SystemType" maxOccurs="unbounded"/>
+      <xsd:element name="tdi-mv" type="SystemType" maxOccurs="unbounded"/>
+      <xsd:element name="tdi-rt" type="SystemType" maxOccurs="unbounded"/>
       <xsd:element name="vri" type="SystemType" maxOccurs="unbounded"/>
       <xsd:element name="mtm" type="SystemType" maxOccurs="unbounded"/>
     <xsd:choice>

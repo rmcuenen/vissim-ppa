@@ -1,0 +1,10 @@
+EG_PPA_wijziging     =    19 
+EG_PPA_status_TDI    =    34 
+EG_PPA_V_RWso        =    81 
+EG_PPA_V_RWsa        =    78 
+EG_PPA_I_RWso        =  1620 
+EG_PPA_I_RWsa        =  2160 
+EG_PPA_stroken_RWso  =     3 
+EG_PPA_stroken_RWsa  =     3 
+EG_PPA_doseerint_2   =     0 
+EG_PPA_storing       =     0 

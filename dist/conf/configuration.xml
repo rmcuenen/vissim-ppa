@@ -4,8 +4,9 @@
               xsi:noNamespaceSchemaLocation="vissim-ppa.xsd">
   <ppawegkant>http://192.168.50.102:80</ppawegkant>
   <data>
+    <tdi-mv id="RWSNWN.00104">C:\data\mv\000104</tdi-mv>
+    <tdi-rt id="RWSNWN.00104">C:\data\regeltoestand\000104</tdi-rt>
     <vri id="AMS.987">C:\data\vlog\kr987</vri>
-    <tdi id="RWSNWN.00104">C:\data\mv\000104</tdi>
     <mtm id="RWSNWN.12345">C:\data\mtm\8001</mtm>
   </data>
 </configuratie>
