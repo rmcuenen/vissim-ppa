@@ -1,9 +1,9 @@
 package cuenen.raymond.java.ppawegkant.processing;
 
-import cuenen.raymond.java.ppawegkant.file.MTMProcessor;
-import cuenen.raymond.java.ppawegkant.file.MVProcessor;
 import cuenen.raymond.java.ppawegkant.file.RTProcessor;
+import cuenen.raymond.java.ppawegkant.file.MVProcessor;
 import cuenen.raymond.java.ppawegkant.file.VLogProcessor;
+import cuenen.raymond.java.ppawegkant.file.MTMProcessor;
 
 /**
  *

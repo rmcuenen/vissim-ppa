@@ -38,7 +38,7 @@ public abstract class DataProcessor {
         logger.debug("Creeër nieuw bericht voor {}", address);
         try {
             Message msg = new Message();
-            URL url = new URL(MainApplication.getURL()
+            URL url = new URL(MainApplication.getApplication().getBaseURL()
                     + ADDRESS_PREFIX + address);
             msg.setAddress(url);
             msg.setContentType(CONTENT_TYPE);

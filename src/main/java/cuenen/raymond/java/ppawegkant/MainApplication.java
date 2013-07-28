@@ -3,14 +3,12 @@ package cuenen.raymond.java.ppawegkant;
 import cuenen.raymond.java.ppawegkant.configuration.Configuration;
 import cuenen.raymond.java.ppawegkant.configuration.SystemData;
 import cuenen.raymond.java.ppawegkant.file.DirectoryWatcher;
-import cuenen.raymond.java.ppawegkant.post.Message;
 import cuenen.raymond.java.ppawegkant.post.MessageSender;
 import java.io.File;
 import java.io.FileReader;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Properties;
 import javax.swing.JOptionPane;
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
@@ -37,12 +35,7 @@ public class MainApplication {
         @Override
         public void run() {
             MainApplication.logger.info("Stoppen van de applicatie");
-            for (DirectoryWatcher watcher : MainApplication.direcoryWatchers) {
-                watcher.stop();
-            }
-            if (MainApplication.messageSender != null) {
-                MainApplication.messageSender.shutdown();
-            }
+            APPLICATION.shutdown();
         }
 
         @Override
@@ -53,14 +46,17 @@ public class MainApplication {
     private static final String CONF_DIR_KEY = "ppawegkant.conf";
     private static final String DEFAULT_CONF_DIR = "conf";
     private static final String CONFIGURATION_FILE = "configuration.xml";
-    private static final String SETTINGS_FILE = "settings.properties";
     private static final String LOG_FILE = "log4j.properties";
     private static final String XSD = "/schema/vissim-ppa.xsd";
-    private static final Collection<DirectoryWatcher> direcoryWatchers = new HashSet<DirectoryWatcher>();
-    private static final Properties settings = new Properties();
-    private static MessageSender messageSender;
+    private static final MainApplication APPLICATION = new MainApplication();
     private static Logger logger;
-    private static String baseURL;
+    private final Collection<DirectoryWatcher> direcoryWatchers = new HashSet<DirectoryWatcher>();
+    private MessageSender messageSender;
+    private String baseURL;
+
+    public static MainApplication getApplication() {
+        return APPLICATION;
+    }
 
     public static void main(String[] args) {
         ShutdownHandler handler = new ShutdownHandler();
@@ -68,46 +64,31 @@ public class MainApplication {
         Runtime.getRuntime().addShutdownHook(handler);
         try {
             Configuration configuration = readConfiguration();
-            baseURL = configuration.getPpaBus();
-            if (!baseURL.endsWith("/")) {
-                baseURL += "/";
+            String ppaBus = configuration.getPpaBus();
+            if (!ppaBus.endsWith("/")) {
+                ppaBus += "/";
             }
-            logger.debug("Gevonden PPA-bus URL: {}", baseURL);
+            logger.debug("Gevonden PPA-bus URL: {}", ppaBus);
+            APPLICATION.setBaseURL(ppaBus);
             for (SystemData data : configuration.getData()) {
+                File directory = data.getDirectory();
+                if (!directory.exists() || !directory.isDirectory()) {
+                    throw new IllegalArgumentException(directory + " bestaat niet");
+                }
                 logger.debug("Nieuwe directory bewaker voor {} op {}",
-                        data.getIdentification(), data.getDirectory());
-                direcoryWatchers.add(new DirectoryWatcher(data));
+                        data.getIdentification(), directory);
+                APPLICATION.createDirectoryWatcher(data);
             }
         } catch (Exception ex) {
             onError("Fout tijdens het initialiseren van de applicaie", ex);
         }
         logger.info("Starten van de applicatie");
-        messageSender = new MessageSender();
-        for (DirectoryWatcher watcher : direcoryWatchers) {
-            watcher.start();
-        }
-    }
-
-    public static void sendMessage(Message message) {
-        messageSender.addMessage(message);
-    }
-
-    public static String getURL() {
-        return baseURL;
-    }
-
-    public static String getProperty(String key) {
-        return settings.getProperty(key);
+        APPLICATION.startup();
     }
 
     private static Configuration readConfiguration() throws Exception {
         String cfgDir = System.getProperty(CONF_DIR_KEY, DEFAULT_CONF_DIR);
         initializeLogging(cfgDir);
-        File settingsFile = new File(cfgDir, SETTINGS_FILE);
-        logger.debug("Zoeken naar applicatie settings: {}", settingsFile);
-        if (settingsFile.exists()) {
-            settings.load(new FileReader(settingsFile));
-        }
         JAXBContext ctx = JAXBContext.newInstance(Configuration.class);
         SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
         Schema schema = schemaFactory.newSchema(MainApplication.class.getResource(XSD));
@@ -143,6 +124,41 @@ public class MainApplication {
     }
 
     private MainApplication() {
-        // Do not instantiate this class.
+        // Singleton.
+    }
+
+    protected void createDirectoryWatcher(SystemData data) {
+        direcoryWatchers.add(new DirectoryWatcher(data));
+    }
+
+    protected void setBaseURL(String baseURL) {
+        this.baseURL = baseURL;
+    }
+
+    public String getBaseURL() {
+        return baseURL;
+    }
+
+    public MessageSender getMessageSender() {
+        if (messageSender == null) {
+            throw new IllegalStateException("Applicatie is nog niet gestart");
+        }
+        return messageSender;
+    }
+
+    public void startup() {
+        messageSender = new MessageSender();
+        for (DirectoryWatcher watcher : direcoryWatchers) {
+            watcher.start();
+        }
+    }
+
+    public void shutdown() {
+        for (DirectoryWatcher watcher : direcoryWatchers) {
+            watcher.stop();
+        }
+        if (messageSender != null) {
+            messageSender.shutdown();
+        }
     }
 }

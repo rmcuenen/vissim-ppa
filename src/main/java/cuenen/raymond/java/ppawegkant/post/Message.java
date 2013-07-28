@@ -1,6 +1,5 @@
 package cuenen.raymond.java.ppawegkant.post;
 
-import cuenen.raymond.java.ppawegkant.MainApplication;
 import java.net.URL;
 
 /**
@@ -9,20 +8,25 @@ import java.net.URL;
  */
 public class Message {
 
+    private static final int RETRY_COUNT;
+
+    static {
+        String value = System.getProperty("message.retryCount", "0");
+        int count = 0;
+        try {
+            count = Integer.parseInt(value);
+        } catch (NumberFormatException ex) {
+            // Ignore
+        }
+        RETRY_COUNT = count;
+    }
     private URL address;
     private String contentType;
     private byte[] message;
-    private int nofRetries = 0;
+    private int nofRetries = RETRY_COUNT;
 
     public Message() {
-        String value = MainApplication.getProperty("nof_retries");
-        if (value != null) {
-            try {
-                nofRetries = Integer.parseInt(value);
-            } catch (NumberFormatException ex) {
-                // Ignore
-            }
-        }
+        // Empty initialization
     }
 
     public void setAddress(URL address) {
