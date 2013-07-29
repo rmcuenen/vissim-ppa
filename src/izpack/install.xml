@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<installation version="1.0">
+    <info>
+        <appname>VISSIM-PPA Koppeling</appname>
+        <appversion>@{project.version}</appversion>
+        <appsubpath>@{project.artifactId}</appsubpath>
+        <authors>
+            <author name="R. Cuenen" email="raymond.cuenen@gmail.com"/>
+        </authors>
+        <uninstaller write="yes" path="${INSTALL_PATH}"/>
+        <javaversion>@{java.version}</javaversion>
+        <requiresjdk>no</requiresjdk>
+    </info>
+ 
+    <locale>
+        <langpack iso3="ned"/>
+    </locale>
+
+    <resources>
+        <res id="Heading.image" src="icon.png"/>
+    </resources>
+
+    <guiprefs width="480" height="320" resizable="no">
+        <modifier key="layoutAnchor" value="NORTHWEST"/>
+        <modifier key="useHeadingPanel" value="yes"/>
+        <modifier key="headingLineCount" value="1"/>
+        <modifier key="headingFontSize" value="1.5"/>
+        <modifier key="headingBackgroundColor" value="0x00ffffff"/>
+        <modifier key="headingPanelCounter" value="text"/>
+        <modifier key="headingPanelCounterPos" value="inHeading"/>
+    </guiprefs>
+
+    <panels>
+        <panel classname="HelloPanel"/>
+        <panel classname="TargetPanel"/>
+        <panel classname="InstallPanel"/>
+        <panel classname="SimpleFinishPanel"/>
+    </panels>
+
+    <packs>
+        <pack name="VISSIM-PPA Koppeling" required="yes">
+            <description>De benodigde bestanden voor de applicatie</description>
+            <fileset dir="dist" targetdir="${INSTALL_PATH}" override="true" excludes="install.xml"/>
+            <file src="../@{project.build.finalName}.jar" 
+                  targetdir="${INSTALL_PATH}" override="true"/>
+        </pack>
+    </packs>
+</installation>
+
