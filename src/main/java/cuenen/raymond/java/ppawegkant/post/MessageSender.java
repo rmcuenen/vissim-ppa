@@ -12,11 +12,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- *
+ * Deze class is verantwoordelijk voor het uitvoeren
+ * van de HTTP POST actie.
+ * 
  * @author R. Cuenen
  */
 public class MessageSender implements Runnable {
-    
+
     private static final String POST_METHOD = "POST";
     private static final String CONTENT_TYPE_KEY = "Content-Type";
     private static final String CONTENT_LENGTH_KEY = "Content-Length";
@@ -24,11 +26,11 @@ public class MessageSender implements Runnable {
     private final BlockingQueue<Message> messageQueue = new ArrayBlockingQueue<Message>(1024);
     private final AtomicBoolean running = new AtomicBoolean(false);
     private Thread queueThread;
-    
+
     public MessageSender() {
         initialize();
     }
-    
+
     public void addMessage(Message message) {
         boolean failed = true;
         do {
@@ -40,7 +42,7 @@ public class MessageSender implements Runnable {
             }
         } while (failed);
     }
-    
+
     public void shutdown() {
         running.set(false);
         if (queueThread != null) {
@@ -54,7 +56,7 @@ public class MessageSender implements Runnable {
             queueThread = null;
         }
     }
-    
+
     @Override
     public void run() {
         running.set(true);
@@ -70,13 +72,13 @@ public class MessageSender implements Runnable {
             }
         } while (running.get());
     }
-    
+
     private void initialize() {
         queueThread = new Thread(this, "Message-Queue-Thread");
         queueThread.start();
         logger.info("Begin verzenden van berichten");
     }
-    
+
     private void sendMessage(Message message) {
         URL url = message.getAddress();
         byte[] msg = message.getMessage();
@@ -106,7 +108,7 @@ public class MessageSender implements Runnable {
             }
         }
     }
-    
+
     private void onFailure(Message message, IOException ex) {
         if (message.resendOnFailure()) {
             logger.warn("Verzenden mislukt, opnieuw...", ex);

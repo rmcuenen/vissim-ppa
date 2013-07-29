@@ -6,7 +6,9 @@ import cuenen.raymond.java.ppawegkant.file.VLogProcessor;
 import cuenen.raymond.java.ppawegkant.file.MTMProcessor;
 
 /**
- *
+ * Dit is de enumeratie van de beschikbare systemen;
+ * TDI-MV, TDI-RT, VRI en MTM.
+ * 
  * @author R. Cuenen
  */
 public enum SystemType {

@@ -14,7 +14,9 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- *
+ * JUnit test voor het controleren van het posten
+ * van een bericht.
+ * 
  * @author R. Cuenen
  */
 public class MessageSenderTest implements TestServer.TestHandler {

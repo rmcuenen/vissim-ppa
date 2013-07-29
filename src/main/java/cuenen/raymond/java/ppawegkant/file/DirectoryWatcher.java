@@ -11,6 +11,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
+import java.nio.channels.FileLock;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -18,11 +19,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- *
+ * Deze class is verantwoordelijk voor het in de gaten
+ * houden van een directory.
+ * 
  * @author R. Cuenen
  */
 public class DirectoryWatcher implements Runnable, FilenameFilter {
 
+    /**
+     * Deze class controleert of een bestand nog
+     * verandert alvorens de verwerking te starten.
+     */
     private class FileHandler extends Thread {
 
         private final File file;
@@ -38,13 +45,18 @@ public class DirectoryWatcher implements Runnable, FilenameFilter {
             boolean isLocked = false;
             do {
                 RandomAccessFile fos = null;
+                FileLock lock = null;
                 try {
                     fos = new RandomAccessFile(file, "rw");
+                    lock = fos.getChannel().lock();
                 } catch (Exception ex) {
                     isLocked = true;
                     waitFor(250);
                 } finally {
                     try {
+                        if (lock != null) {
+                            lock.release();
+                        }
                         if (fos != null) {
                             fos.close();
                         }
@@ -52,7 +64,7 @@ public class DirectoryWatcher implements Runnable, FilenameFilter {
                         // Ignore
                     }
                 }
-            }  while (isLocked);
+            } while (isLocked);
             handleFile(file);
         }
     }
@@ -136,14 +148,18 @@ public class DirectoryWatcher implements Runnable, FilenameFilter {
             if (message != null) {
                 MainApplication.getApplication().getMessageSender().addMessage(message);
             }
-            file.delete();
+            dataStream.close();
+            dataStream = null;
+            if (!file.delete()) {
+                throw new IOException("Kan bestand niet verwijderen");
+            }
+            synchronized (fileSet) {
+                fileSet.remove(file);
+            }
         } catch (IOException ex) {
             logger.error("Fout tijdens het verwerken van bestand " + file, ex);
             ApplicationIcon.notifyState(2);
         } finally {
-            synchronized (fileSet) {
-                fileSet.remove(file);
-            }
             if (dataStream != null) {
                 try {
                     dataStream.close();

@@ -2,12 +2,12 @@
 
 <configuratie xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
               xsi:noNamespaceSchemaLocation="vissim-ppa.xsd">
-  <ppawegkant>http://localhost:8008</ppawegkant>
+  <ppawegkant>http://192.168.50.102:8008</ppawegkant>
   <data>
-    <tdi-mv id="RWSNWN.00104">C:\data\mv\000104</tdi-mv>
-    <tdi-rt id="RWSNWN.00104">C:\data\regeltoestand\000104</tdi-rt>
-    <vri id="AMS.987">C:\data\vlog\kr987</vri>
-    <mtm id="RWSNWN.12345">C:\data\mtm\8001</mtm>
+    <tdi-mv id="RWSNWN.00104">C:\ppa\data\mv\000104</tdi-mv>
+    <tdi-rt id="RWSNWN.00104">C:\ppa\data\regeltoestand\000104</tdi-rt>
+    <vri id="AMS.987">C:\ppa\data\vlog\kr987</vri>
+    <mtm id="RWSNWN.12345">C:\ppa\data\mtm\8001</mtm>
   </data>
 </configuratie>
 

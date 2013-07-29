@@ -21,11 +21,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * Dit is de class die de initialisatie en het opstarten
+ * van de applicatie verzorgt.
  * 
  * @author R. Cuenen
  */
 public class MainApplication {
 
+    /**
+     * Dit is een inner-class die de juiste 
+     * afsluitprocedure afhandelt.
+     */
     private static class ShutdownHandler extends Thread
             implements UncaughtExceptionHandler {
 

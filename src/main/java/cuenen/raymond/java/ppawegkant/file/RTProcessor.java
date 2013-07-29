@@ -12,7 +12,9 @@ import java.util.Map;
 import org.slf4j.LoggerFactory;
 
 /**
- *
+ * {@link DataProcessor} implementatie voor de afhandeling
+ * van tekstbestanden met regeltoestand TDI.
+ * 
  * @author R. Cuenen
  */
 public class RTProcessor extends DataProcessor {

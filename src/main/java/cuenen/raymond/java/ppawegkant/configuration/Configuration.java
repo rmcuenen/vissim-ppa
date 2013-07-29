@@ -10,7 +10,9 @@ import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- *
+ * Deze class stelt de configuratie voor.
+ * Hierin staat o.a. de URL van de PPA-bus.
+ * 
  * @author R. Cuenen
  */
 @XmlRootElement(name = "configuratie")

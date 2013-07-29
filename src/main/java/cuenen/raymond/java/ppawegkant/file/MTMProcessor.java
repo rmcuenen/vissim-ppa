@@ -13,7 +13,9 @@ import java.util.StringTokenizer;
 import org.slf4j.LoggerFactory;
 
 /**
- *
+ * {@link DataProcessor} implementatie voor de afhandeling
+ * van tekstbestanden met MTM data.
+ * 
  * @author R. Cuenen
  */
 public class MTMProcessor extends DataProcessor {

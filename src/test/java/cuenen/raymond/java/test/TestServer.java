@@ -14,11 +14,16 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 /**
- *
+ * Utility class dat een simple HTTP Server implementeerd.
+ * 
  * @author R. Cuenen
  */
 public class TestServer extends Thread {
 
+    /**
+     * Interface die gebruikt kan worden om de
+     * HTTP request te kunnen bekijken.
+     */
     public static interface TestHandler {
 
         void onFailure(String origin, IOException ex);
@@ -26,6 +31,10 @@ public class TestServer extends Thread {
         void onSuccess(String origin, List<String> request);
     }
 
+    /**
+     * {@link TestHandler} implementatie die de informatie
+     * op standaard output weergeeft.
+     */
     public static class DefaultHandler implements TestHandler {
 
         @Override

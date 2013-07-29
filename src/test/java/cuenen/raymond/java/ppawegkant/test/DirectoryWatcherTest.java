@@ -18,7 +18,9 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 /**
- *
+ * JUnit test voor het controleren van het pollen
+ * van een directory.
+ * 
  * @author R. Cuenen
  */
 public class DirectoryWatcherTest {

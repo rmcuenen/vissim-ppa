@@ -3,7 +3,9 @@ package cuenen.raymond.java.ppawegkant.post;
 import java.net.URL;
 
 /**
- *
+ * Deze class stelt een JSON bericht voor
+ * wat op de PPA-bus gezet moet worden.
+ * 
  * @author R. Cuenen
  */
 public class Message {

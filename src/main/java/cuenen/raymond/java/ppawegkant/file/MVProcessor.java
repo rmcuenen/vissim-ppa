@@ -10,7 +10,9 @@ import org.slf4j.LoggerFactory;
 import sun.misc.BASE64Encoder;
 
 /**
- *
+ * {@link DataProcessor} implementatie voor de afhandeling
+ * van MV-bestanden.
+ * 
  * @author R. Cuenen
  */
 public class MVProcessor extends DataProcessor {

@@ -18,7 +18,9 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- *
+ * JUnit test voor het controleren van de xsd van 
+ * de configuratie xml.
+ * 
  * @author R. Cuenen
  */
 public class ConfigurationTest {

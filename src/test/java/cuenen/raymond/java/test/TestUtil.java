@@ -7,7 +7,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 /**
- *
+ * Utility class voor het initialiseren van directory's
+ * en bestanden om te gebruiken in testen.
+ * 
  * @author R. Cuenen
  */
 public final class TestUtil {

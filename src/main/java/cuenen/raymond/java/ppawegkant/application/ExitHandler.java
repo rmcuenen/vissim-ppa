@@ -5,7 +5,9 @@ import java.awt.event.ActionListener;
 import javax.swing.JOptionPane;
 
 /**
- *
+ * Dubbel-klik op het applicatie icoon geeft het
+ * afsluit-dialoogvenster.
+ * 
  * @author R. Cuenen
  */
 public class ExitHandler implements ActionListener {

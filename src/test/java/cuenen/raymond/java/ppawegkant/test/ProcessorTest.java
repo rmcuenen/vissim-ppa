@@ -20,7 +20,9 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 /**
- *
+ * JUnit test voor het controleren van de verwerking
+ * van de verschillende bestanden.
+ * 
  * @author R. Cuenen
  */
 public class ProcessorTest {

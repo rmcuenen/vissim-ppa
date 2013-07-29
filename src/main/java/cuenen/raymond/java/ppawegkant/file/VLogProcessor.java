@@ -12,7 +12,9 @@ import java.util.List;
 import org.slf4j.LoggerFactory;
 
 /**
- *
+ * {@link DataProcessor} implementatie voor de afhandeling
+ * van VLog-bestanden.
+ * 
  * @author R. Cuenen
  */
 public class VLogProcessor extends DataProcessor {

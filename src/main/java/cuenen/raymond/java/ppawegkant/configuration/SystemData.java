@@ -8,7 +8,9 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlValue;
 
 /**
- *
+ * Deze class stelt de configuratie van een directory voor.
+ * Alle benodigde conversie informatie bevind zich in deze class.
+ * 
  * @author R. Cuenen
  */
 @XmlAccessorType(XmlAccessType.FIELD)

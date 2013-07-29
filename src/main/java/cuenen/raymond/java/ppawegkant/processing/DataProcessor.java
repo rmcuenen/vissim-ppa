@@ -16,7 +16,9 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 
 /**
- *
+ * Dit is een abstract class die de basis vormt voor het verwerken
+ * en converteren van bestandsgegevens.
+ * 
  * @author R. Cuenen
  */
 public abstract class DataProcessor {

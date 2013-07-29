@@ -3,7 +3,6 @@ package cuenen.raymond.java.ppawegkant.application;
 import java.awt.AWTException;
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.SystemColor;
 import java.awt.SystemTray;
 import java.awt.TrayIcon;
 import java.awt.image.BufferedImage;
@@ -16,7 +15,8 @@ import java.util.Timer;
 import javax.imageio.ImageIO;
 
 /**
- *
+ * Deze feature geeft een icoon op de Systeem Tray.
+ * 
  * @author R.Cuenen
  */
 public class ApplicationIcon {
@@ -78,14 +78,12 @@ public class ApplicationIcon {
             BufferedImage target = new BufferedImage(32, 32, BufferedImage.TYPE_INT_ARGB);
             op.filter(icon, target);
             timer.schedule(new IconHandler(trayIcon, target), 0L);
-            timer.schedule(new IconHandler(trayIcon, icon), 500L);
+            timer.schedule(new IconHandler(trayIcon, icon), 750L);
         }
     }
 
     private void createIcon() {
         Graphics2D g2d = icon.createGraphics();
-        g2d.setColor(SystemColor.menu);
-        g2d.fillRect(0, 0, 32, 32);
         try {
             BufferedImage image = ImageIO.read(ApplicationIcon.class.getResourceAsStream("/icon.png"));
             g2d.drawImage(image, 0, 0, 32, 32, null);
