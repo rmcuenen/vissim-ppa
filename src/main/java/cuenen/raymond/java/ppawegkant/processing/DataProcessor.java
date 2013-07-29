@@ -23,7 +23,7 @@ public abstract class DataProcessor {
 
     private static final String CONTENT_TYPE = "application/json";
     private static final String ADDRESS_PREFIX = "ppawegkant/";
-    private static final String DATE_TIME_MATCHER = "_[0-9]{6}_[0-9]{6}\\.";
+    private static final String DATE_TIME_MATCHER = "_[0-9]{8}_[0-9]{6}\\.";
     private static final DateFormat DATE_TIME_FORMATTER = new SimpleDateFormat("_yyyyMMdd_HHmmss.");
     protected Logger logger;
 
@@ -45,7 +45,7 @@ public abstract class DataProcessor {
             msg.setMessage(message);
             return msg;
         } catch (MalformedURLException ex) {
-            throw new IllegalArgumentException("Configuratie fout?");
+            throw new IllegalArgumentException("Configuratie fout?", ex);
         }
     }
 
@@ -53,8 +53,10 @@ public abstract class DataProcessor {
         try {
             Pattern p = Pattern.compile(DATE_TIME_MATCHER);
             Matcher m = p.matcher(filename);
-            Date date = DATE_TIME_FORMATTER.parse(m.group());
-            return date.getTime();
+            if (m.find()) {
+                Date date = DATE_TIME_FORMATTER.parse(m.group());
+                return date.getTime();
+            }
         } catch (ParseException ex) {
             logger.error("Bestand {} voldoet niet aan het verwachte tijdsformaat",
                     filename);

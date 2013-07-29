@@ -1,6 +1,7 @@
 package cuenen.raymond.java.ppawegkant.file;
 
 import cuenen.raymond.java.ppawegkant.MainApplication;
+import cuenen.raymond.java.ppawegkant.application.ApplicationIcon;
 import cuenen.raymond.java.ppawegkant.configuration.SystemData;
 import cuenen.raymond.java.ppawegkant.post.Message;
 import cuenen.raymond.java.ppawegkant.processing.DataProcessor;
@@ -9,6 +10,7 @@ import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.RandomAccessFile;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -33,25 +35,28 @@ public class DirectoryWatcher implements Runnable, FilenameFilter {
         @Override
         public void run() {
             logger.debug("Nieuw bestand gevonden: {}", file);
-            int noChangeCount = 2;
-            long lastModified = 0L;
-            for (;;) {
-                long modified = file.lastModified();
-                if (modified - lastModified > 0L) {
-                    noChangeCount = 2;
-                } else {
-                    noChangeCount--;
+            boolean isLocked = false;
+            do {
+                RandomAccessFile fos = null;
+                try {
+                    fos = new RandomAccessFile(file, "rw");
+                } catch (Exception ex) {
+                    isLocked = true;
+                    waitFor(250);
+                } finally {
+                    try {
+                        if (fos != null) {
+                            fos.close();
+                        }
+                    } catch (IOException e) {
+                        // Ignore
+                    }
                 }
-                if (noChangeCount == 0) {
-                    break;
-                }
-                lastModified = modified;
-                waitFor(250);
-            }
+            }  while (isLocked);
             handleFile(file);
         }
     }
-    private static final String FILE_NAME_MATCHER = ".*_[0-9]{6}_[0-9]{6}\\..*";
+    private static final String FILE_NAME_MATCHER = ".*_[0-9]{8}_[0-9]{6}\\..*";
     private final Logger logger = LoggerFactory.getLogger(DirectoryWatcher.class);
     private final Collection<File> fileSet = new HashSet<File>();
     private final AtomicBoolean watching = new AtomicBoolean(false);
@@ -122,7 +127,7 @@ public class DirectoryWatcher implements Runnable, FilenameFilter {
     }
 
     private void handleFile(File file) {
-        logger.debug("Bestand verwerken: {}", file);
+        logger.info("Bestand verwerken: {}", file);
         InputStream dataStream = null;
         try {
             dataStream = new FileInputStream(file);
@@ -134,6 +139,7 @@ public class DirectoryWatcher implements Runnable, FilenameFilter {
             file.delete();
         } catch (IOException ex) {
             logger.error("Fout tijdens het verwerken van bestand " + file, ex);
+            ApplicationIcon.notifyState(2);
         } finally {
             synchronized (fileSet) {
                 fileSet.remove(file);

@@ -3,7 +3,6 @@ package cuenen.raymond.java.ppawegkant.file;
 import cuenen.raymond.java.ppawegkant.configuration.SystemData;
 import cuenen.raymond.java.ppawegkant.post.Message;
 import cuenen.raymond.java.ppawegkant.processing.DataProcessor;
-import cuenen.raymond.java.ppawegkant.processing.DataProcessor;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -45,8 +44,8 @@ public class MTMProcessor extends DataProcessor {
     private String createObject(long timestamp, List<String> raaien) {
         StringBuilder obj = new StringBuilder();
         obj.append("{\"interface\":\"").append(ADDRESS).append("\",");
-        obj.append("{\"timestamp\":").append(timestamp).append(',');
-        obj.append("{\"raaien\":[");
+        obj.append("\"timestamp\":").append(timestamp).append(',');
+        obj.append("\"raaien\":[");
         for (int i = 0; i < raaien.size(); i++) {
             if (i > 0) {
                 obj.append(',');

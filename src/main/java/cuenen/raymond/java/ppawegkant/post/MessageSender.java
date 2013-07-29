@@ -1,5 +1,6 @@
 package cuenen.raymond.java.ppawegkant.post;
 
+import cuenen.raymond.java.ppawegkant.application.ApplicationIcon;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -15,7 +16,7 @@ import org.slf4j.LoggerFactory;
  * @author R. Cuenen
  */
 public class MessageSender implements Runnable {
-
+    
     private static final String POST_METHOD = "POST";
     private static final String CONTENT_TYPE_KEY = "Content-Type";
     private static final String CONTENT_LENGTH_KEY = "Content-Length";
@@ -23,11 +24,11 @@ public class MessageSender implements Runnable {
     private final BlockingQueue<Message> messageQueue = new ArrayBlockingQueue<Message>(1024);
     private final AtomicBoolean running = new AtomicBoolean(false);
     private Thread queueThread;
-
+    
     public MessageSender() {
         initialize();
     }
-
+    
     public void addMessage(Message message) {
         boolean failed = true;
         do {
@@ -39,7 +40,7 @@ public class MessageSender implements Runnable {
             }
         } while (failed);
     }
-
+    
     public void shutdown() {
         running.set(false);
         if (queueThread != null) {
@@ -53,7 +54,7 @@ public class MessageSender implements Runnable {
             queueThread = null;
         }
     }
-
+    
     @Override
     public void run() {
         running.set(true);
@@ -69,13 +70,13 @@ public class MessageSender implements Runnable {
             }
         } while (running.get());
     }
-
+    
     private void initialize() {
         queueThread = new Thread(this, "Message-Queue-Thread");
         queueThread.start();
         logger.info("Begin verzenden van berichten");
     }
-
+    
     private void sendMessage(Message message) {
         URL url = message.getAddress();
         byte[] msg = message.getMessage();
@@ -90,12 +91,13 @@ public class MessageSender implements Runnable {
             conn.setDoOutput(true);
             OutputStream output = conn.getOutputStream();
             output.write(msg);
-            conn.connect();
             output.flush();
             int response = conn.getResponseCode();
             if (200 != response) {
                 throw new IOException("Got response code " + response);
             }
+            ApplicationIcon.notifyState(0);
+            logger.info("Bericht verzonden naar {}", url);
         } catch (IOException ex) {
             onFailure(message, ex);
         } finally {
@@ -104,13 +106,15 @@ public class MessageSender implements Runnable {
             }
         }
     }
-
+    
     private void onFailure(Message message, IOException ex) {
         if (message.resendOnFailure()) {
             logger.warn("Verzenden mislukt, opnieuw...", ex);
+            ApplicationIcon.notifyState(1);
             sendMessage(message);
         } else {
             logger.error("Fout tijdens het posten van een bericht", ex);
+            ApplicationIcon.notifyState(2);
         }
     }
 }

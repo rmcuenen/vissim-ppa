@@ -4,7 +4,7 @@
 
   <xsd:complexType name="Configuration">
     <xsd:sequence>
-      <xsd:element name="ppawegkant" type="xsd:string"/>
+      <xsd:element name="ppawegkant" type="NonEmptyString"/>
       <xsd:element name="data" type="SystemData"/>
     </xsd:sequence>
   </xsd:complexType>
@@ -20,10 +20,16 @@
 
   <xsd:complexType name="SystemType">
     <xsd:simpleContent>
-      <xsd:extension base="xsd:string">
+      <xsd:extension base="NonEmptyString">
         <xsd:attribute name="id" type="xsd:string" use="required"/>
       </xsd:extension>
     </xsd:simpleContent>
   </xsd:complexType>
+  
+  <xsd:simpleType name="NonEmptyString">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="1"/>
+    </xsd:restriction>
+  </xsd:simpleType>
 </xsd:schema>
 

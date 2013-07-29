@@ -1,5 +1,6 @@
 package cuenen.raymond.java.ppawegkant;
 
+import cuenen.raymond.java.ppawegkant.application.ApplicationIcon;
 import cuenen.raymond.java.ppawegkant.configuration.Configuration;
 import cuenen.raymond.java.ppawegkant.configuration.SystemData;
 import cuenen.raymond.java.ppawegkant.file.DirectoryWatcher;
@@ -70,10 +71,13 @@ public class MainApplication {
             }
             logger.debug("Gevonden PPA-bus URL: {}", ppaBus);
             APPLICATION.setBaseURL(ppaBus);
+            Collection<File> directories = new HashSet<File>();
             for (SystemData data : configuration.getData()) {
                 File directory = data.getDirectory();
                 if (!directory.exists() || !directory.isDirectory()) {
                     throw new IllegalArgumentException(directory + " bestaat niet");
+                } else if (directories.contains(directory)) {
+                    throw new IllegalArgumentException(directory + " is al geconfigureerd");
                 }
                 logger.debug("Nieuwe directory bewaker voor {} op {}",
                         data.getIdentification(), directory);
@@ -83,6 +87,7 @@ public class MainApplication {
             onError("Fout tijdens het initialiseren van de applicaie", ex);
         }
         logger.info("Starten van de applicatie");
+        ApplicationIcon.notifyState(-1);
         APPLICATION.startup();
     }
 

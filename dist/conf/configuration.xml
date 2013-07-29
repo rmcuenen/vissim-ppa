@@ -2,7 +2,7 @@
 
 <configuratie xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
               xsi:noNamespaceSchemaLocation="vissim-ppa.xsd">
-  <ppawegkant>http://192.168.50.102:80</ppawegkant>
+  <ppawegkant>http://localhost:8008</ppawegkant>
   <data>
     <tdi-mv id="RWSNWN.00104">C:\data\mv\000104</tdi-mv>
     <tdi-rt id="RWSNWN.00104">C:\data\regeltoestand\000104</tdi-rt>

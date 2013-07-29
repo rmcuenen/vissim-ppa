@@ -3,7 +3,6 @@ package cuenen.raymond.java.ppawegkant.file;
 import cuenen.raymond.java.ppawegkant.configuration.SystemData;
 import cuenen.raymond.java.ppawegkant.post.Message;
 import cuenen.raymond.java.ppawegkant.processing.DataProcessor;
-import cuenen.raymond.java.ppawegkant.processing.DataProcessor;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -59,14 +58,19 @@ public class RTProcessor extends DataProcessor {
     private String createObject(long timestamp, String tdi, Map<String, String> content) {
         StringBuilder obj = new StringBuilder();
         obj.append("{\"interface\":\"").append(ADDRESS).append("\",");
-        obj.append("{\"timestamp\":").append(timestamp).append(',');
-        obj.append("{\"tdi\":\"").append(tdi).append("\",");
-        obj.append("{\"regeltoestand\":\"").append(content.get("regeltoestand")).append("\",");
-        obj.append("{\"v_rwso_kmh\":").append(content.get("v_rwso_kmh")).append(',');
-        obj.append("{\"v_rwsa_kmh\":").append(content.get("v_rwsa_kmh")).append(',');
-        obj.append("{\"i_rwso_vth\":").append(content.get("i_rwso_vth")).append(',');
-        obj.append("{\"i_rwsa_vth\":").append(content.get("i_rwsa_vth")).append(',');
-        obj.append("{\"i_doseer_vth\":").append(content.get("i_doseer_vth")).append(',');
+        obj.append("\"timestamp\":").append(timestamp).append(',');
+        obj.append("\"tdi\":\"").append(tdi).append("\",");
+        String state = content.get("regeltoestand");
+        if (state == null) {
+            obj.append("\"regeltoestand\":").append(state).append(',');
+        } else {
+            obj.append("\"regeltoestand\":\"").append(state).append("\",");
+        }
+        obj.append("\"v_rwso_kmh\":").append(content.get("v_rwso_kmh")).append(',');
+        obj.append("\"v_rwsa_kmh\":").append(content.get("v_rwsa_kmh")).append(',');
+        obj.append("\"i_rwso_vth\":").append(content.get("i_rwso_vth")).append(',');
+        obj.append("\"i_rwsa_vth\":").append(content.get("i_rwsa_vth")).append(',');
+        obj.append("\"i_doseer_vth\":").append(content.get("i_doseer_vth")).append(',');
         obj.append("\"storing\":[]}");
         return obj.toString();
     }
