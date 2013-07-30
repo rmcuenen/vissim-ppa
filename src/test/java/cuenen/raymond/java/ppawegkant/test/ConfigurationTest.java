@@ -1,7 +1,7 @@
 package cuenen.raymond.java.ppawegkant.test;
 
 import java.io.File;
-import cuenen.raymond.java.ppawegkant.MainApplication;
+import cuenen.raymond.java.ppawegkant.application.MainApplication;
 import cuenen.raymond.java.ppawegkant.configuration.Configuration;
 import cuenen.raymond.java.ppawegkant.configuration.SystemData;
 import java.io.StringReader;

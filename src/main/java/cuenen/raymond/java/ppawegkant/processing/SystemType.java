@@ -1,10 +1,5 @@
 package cuenen.raymond.java.ppawegkant.processing;
 
-import cuenen.raymond.java.ppawegkant.file.RTProcessor;
-import cuenen.raymond.java.ppawegkant.file.MVProcessor;
-import cuenen.raymond.java.ppawegkant.file.VLogProcessor;
-import cuenen.raymond.java.ppawegkant.file.MTMProcessor;
-
 /**
  * Dit is de enumeratie van de beschikbare systemen;
  * TDI-MV, TDI-RT, VRI en MTM.
@@ -19,10 +14,20 @@ public enum SystemType {
     MTM(new MTMProcessor());
     private final DataProcessor dataProcessor;
 
+    /**
+     * Creeër het {@link SystemType} enum-object.
+     * 
+     * @param dataProcessor de bijbehorende {@link DataProcessor}
+     */
     private SystemType(DataProcessor dataProcessor) {
         this.dataProcessor = dataProcessor;
     }
 
+    /**
+     * Geeft de bijbehorende {@link DataProcessor}.
+     * 
+     * @return de {@link DataProcessor}
+     */
     public DataProcessor getDataProcessor() {
         return dataProcessor;
     }

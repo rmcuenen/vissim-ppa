@@ -1,12 +1,12 @@
 package cuenen.raymond.java.ppawegkant.test;
 
+import cuenen.raymond.java.ppawegkant.sending.Message;
+import cuenen.raymond.java.ppawegkant.sending.MessageSender;
 import java.util.List;
 import org.junit.After;
 import org.junit.Before;
 import java.io.IOException;
 import java.net.URL;
-import cuenen.raymond.java.ppawegkant.post.Message;
-import cuenen.raymond.java.ppawegkant.post.MessageSender;
 import cuenen.raymond.java.test.TestServer;
 import org.apache.log4j.BasicConfigurator;
 import org.junit.BeforeClass;

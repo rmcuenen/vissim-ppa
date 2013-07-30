@@ -30,18 +30,36 @@ public class Configuration {
     })
     private final Collection<SystemData> data = new HashSet<SystemData>();
 
+    /**
+     * Creeër een nieuwe {@link Configuration}.
+     */
     public Configuration() {
         // JAXB initialization
     }
 
+    /**
+     * Geeft de geconfigureerde URL van de PPA-bus.
+     * 
+     * @return de URL van de PPA-bus
+     */
     public String getPpaBus() {
         return ppaBus;
     }
 
+    /**
+     * Confiureer de URL van de PPA-bus.
+     * 
+     * @param ppaBus de URL van de PPA-bus
+     */
     public void setPpaBus(String ppaBus) {
         this.ppaBus = ppaBus;
     }
 
+    /**
+     * Bekijk de gecofigureerde systemen.
+     * 
+     * @return collectie van geconfigureerde systemen
+     */
     public Collection<SystemData> getData() {
         return data;
     }

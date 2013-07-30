@@ -1,14 +1,14 @@
 package cuenen.raymond.java.ppawegkant.test;
 
+import cuenen.raymond.java.ppawegkant.sending.Message;
 import org.junit.After;
 import org.junit.Before;
 import java.lang.reflect.Field;
 import java.net.URL;
-import cuenen.raymond.java.ppawegkant.MainApplication;
+import cuenen.raymond.java.ppawegkant.application.MainApplication;
 import java.io.InputStream;
 import java.io.File;
 import cuenen.raymond.java.ppawegkant.configuration.SystemData;
-import cuenen.raymond.java.ppawegkant.post.Message;
 import cuenen.raymond.java.ppawegkant.processing.DataProcessor;
 import cuenen.raymond.java.ppawegkant.processing.SystemType;
 import cuenen.raymond.java.test.TestUtil;

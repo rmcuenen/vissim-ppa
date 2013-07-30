@@ -1,8 +1,8 @@
 package cuenen.raymond.java.ppawegkant.processing;
 
-import cuenen.raymond.java.ppawegkant.MainApplication;
+import cuenen.raymond.java.ppawegkant.application.MainApplication;
 import cuenen.raymond.java.ppawegkant.configuration.SystemData;
-import cuenen.raymond.java.ppawegkant.post.Message;
+import cuenen.raymond.java.ppawegkant.sending.Message;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -29,13 +29,32 @@ public abstract class DataProcessor {
     private static final DateFormat DATE_TIME_FORMATTER = new SimpleDateFormat("_yyyyMMdd_HHmmss.");
     protected Logger logger;
 
+    /**
+     * Creeër de {@link DataProcessor}.
+     */
     protected DataProcessor() {
         // Abstract super constructor
     }
 
+    /**
+     * Verwerk het gegeven bestand tot een bericht.
+     * 
+     * @param filename de bestandsnaam
+     * @param dataStream de {@link InputStream} naar de bestandsinhoud
+     * @param context de systeem informatie
+     * @return een nieuw te verzenden bericht
+     * @throws IOException wanneer er een fout optreed tijdens de verwerking
+     */
     public abstract Message process(String filename,
             InputStream dataStream, SystemData context) throws IOException;
 
+    /**
+     * Creeër een {@link Message}.
+     * 
+     * @param address het (sub-)adres van het bericht
+     * @param message het daadwerkelijke bericht
+     * @return het representeerdende {@link Message}-object
+     */
     protected Message newMessage(String address, byte[] message) {
         logger.debug("Creeër nieuw bericht voor {}", address);
         try {
@@ -51,6 +70,12 @@ public abstract class DataProcessor {
         }
     }
 
+    /**
+     * Bepaal het tijdtip uit de bestandsnaam.
+     * 
+     * @param filename de bestandsnaam
+     * @return het tijdstip
+     */
     protected long toTimestamp(String filename) {
         try {
             Pattern p = Pattern.compile(DATE_TIME_MATCHER);
