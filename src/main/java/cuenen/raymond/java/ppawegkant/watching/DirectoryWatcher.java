@@ -101,25 +101,6 @@ public class DirectoryWatcher implements Runnable, FilenameFilter, FileHandler {
     }
 
     /**
-     * Wacht voor de aangegeven aantal milliseconden.
-     * Er wordt met zekerheid {@code time} milliseconden gewacht.
-     * 
-     * @param time aantal milliseconden om te wachten
-     */
-    private void waitFor(long time) {
-        long toWait = time;
-        do {
-            long current = System.nanoTime();
-            try {
-                Thread.sleep(toWait);
-            } catch (InterruptedException ex) {
-                // Ignore
-            }
-            toWait -= (System.nanoTime() - current);
-        } while (toWait > 0L);
-    }
-
-    /**
      * {@inheritDoc}
      */
     @Override
@@ -154,4 +135,24 @@ public class DirectoryWatcher implements Runnable, FilenameFilter, FileHandler {
             }
         }
     }
+
+    /**
+     * Wacht voor de aangegeven aantal milliseconden.
+     * Er wordt met zekerheid {@code time} milliseconden gewacht.
+     * 
+     * @param time aantal milliseconden om te wachten
+     */
+    private void waitFor(long time) {
+        long toWait = time;
+        do {
+            long current = System.nanoTime();
+            try {
+                Thread.sleep(toWait);
+            } catch (InterruptedException ex) {
+                // Ignore
+            }
+            toWait -= (System.nanoTime() - current);
+        } while (toWait > 0L);
+    }
 }
+

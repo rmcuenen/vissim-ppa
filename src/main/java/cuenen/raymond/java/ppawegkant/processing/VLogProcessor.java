@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * {@link DataProcessor} implementatie voor de afhandeling
- * van VLog-bestanden.
+ * van VLog_ASCII-bestanden.
  * 
  * @author R. Cuenen
  */
