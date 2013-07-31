@@ -19,10 +19,11 @@ public class RTProcessor extends DataProcessor {
 
     private static final String ADDRESS = "data/tdi/regeltoestand";
     private static final Map<String, String> FIELD_MAP = new HashMap<String, String>();
+    private static final Map<String, String> RT_MAP = new HashMap<String, String>();
 
     static {
         FIELD_MAP.put("EG_PPA_wijziging", "");
-        FIELD_MAP.put("EG_PPA_status_TDI", "");
+        FIELD_MAP.put("EG_PPA_status_TDI", "regeltoestand");
         FIELD_MAP.put("EG_PPA_V_RWso", "v_rwso_kmh");
         FIELD_MAP.put("EG_PPA_V_RWsa", "v_rwsa_kmh");
         FIELD_MAP.put("EG_PPA_I_RWso", "i_rwso_vth");
@@ -31,6 +32,18 @@ public class RTProcessor extends DataProcessor {
         FIELD_MAP.put("EG_PPA_stroken_RWsa", "");
         FIELD_MAP.put("EG_PPA_doseerint_2", "i_doseer_vth");
         FIELD_MAP.put("EG_PPA_storing", "storing");
+        RT_MAP.put("1", "AAN");
+        RT_MAP.put("2", "AAN");
+        RT_MAP.put("3", "PPA_AAN");
+        RT_MAP.put("4", "AAN");
+        RT_MAP.put("11", "AAN");
+        RT_MAP.put("12", "AAN");
+        RT_MAP.put("13", "PPA_AAN");
+        RT_MAP.put("14", "AAN");
+        RT_MAP.put("31", "UIT");
+        RT_MAP.put("32", "UIT");
+        RT_MAP.put("33", "PPA_UIT");
+        RT_MAP.put("34", "UIT");
     }
 
     /**
@@ -74,9 +87,9 @@ public class RTProcessor extends DataProcessor {
         obj.append("{\"interface\":\"").append(ADDRESS).append("\",");
         obj.append("\"timestamp\":").append(timestamp).append(',');
         obj.append("\"tdi\":\"").append(tdi).append("\",");
-        String state = content.get("regeltoestand");
+        String state = RT_MAP.get(content.get("regeltoestand"));
         if (state == null) {
-            obj.append("\"regeltoestand\":").append(state).append(',');
+            obj.append("\"regeltoestand\":\"ONBEKEND\",");
         } else {
             obj.append("\"regeltoestand\":\"").append(state).append("\",");
         }
