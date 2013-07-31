@@ -17,21 +17,33 @@ import org.slf4j.LoggerFactory;
  * 
  * @author R. Cuenen
  */
-public class MessageSender implements Runnable {
+public final class MessageSender implements Runnable {
 
     private static final String POST_METHOD = "POST";
     private static final String CONTENT_TYPE_KEY = "Content-Type";
     private static final String CONTENT_LENGTH_KEY = "Content-Length";
+    private static final MessageSender INSTANCE = new MessageSender();
     private final Logger logger = LoggerFactory.getLogger(MessageSender.class);
     private final BlockingQueue<Message> messageQueue = new ArrayBlockingQueue<Message>(1024);
     private final AtomicBoolean running = new AtomicBoolean(false);
     private Thread queueThread;
 
     /**
-     * Creeër een niuwe {@link MessageSender}.
+     * Geeft de {@link MessageSender} sigleton.
+     * 
+     * @return de {@link MessageSender}
      */
-    public MessageSender() {
-        initialize();
+    public static synchronized MessageSender getInstance() {
+        return INSTANCE;
+    }
+
+    /**
+     * Creeër de {@link MessageSender}.
+     */
+    private MessageSender() {
+        queueThread = new Thread(this, "Message-Queue-Thread");
+        queueThread.start();
+        logger.info("Begin verzenden van berichten");
     }
 
     /**
@@ -85,15 +97,6 @@ public class MessageSender implements Runnable {
                 sendMessage(msg);
             }
         } while (running.get());
-    }
-
-    /**
-     * Initialiseer en start de verzend-thread.
-     */
-    private void initialize() {
-        queueThread = new Thread(this, "Message-Queue-Thread");
-        queueThread.start();
-        logger.info("Begin verzenden van berichten");
     }
 
     /**

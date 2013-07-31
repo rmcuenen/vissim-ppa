@@ -1,6 +1,5 @@
 package cuenen.raymond.java.ppawegkant.processing;
 
-import cuenen.raymond.java.ppawegkant.configuration.SystemData;
 import cuenen.raymond.java.ppawegkant.sending.Message;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -29,8 +28,8 @@ public class MVProcessor extends DataProcessor {
      * {@inheritDoc}
      */
     @Override
-    public Message process(String filename, InputStream dataStream, SystemData context) throws IOException {
-        logger.debug("Verwerking van bestand {} voor {}", filename, context.getIdentification());
+    public Message process(String filename, InputStream dataStream, String systemId) throws IOException {
+        logger.debug("Verwerking van bestand {} voor {}", filename, systemId);
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         byte[] tmp = new byte[1024];
         int read;
@@ -38,7 +37,7 @@ public class MVProcessor extends DataProcessor {
             buffer.write(tmp, 0, read);
         }
         String mvBin = Base64.encodeBase64String(buffer.toByteArray());
-        String json = createObject(filename, context.getIdentification(), mvBin);
+        String json = createObject(filename, systemId, mvBin);
         return newMessage(ADDRESS, json.getBytes());
     }
 

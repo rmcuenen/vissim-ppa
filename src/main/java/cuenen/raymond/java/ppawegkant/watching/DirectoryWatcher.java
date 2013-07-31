@@ -1,10 +1,10 @@
 package cuenen.raymond.java.ppawegkant.watching;
 
-import cuenen.raymond.java.ppawegkant.application.MainApplication;
 import cuenen.raymond.java.ppawegkant.icon.ApplicationIcon;
 import cuenen.raymond.java.ppawegkant.configuration.SystemData;
 import cuenen.raymond.java.ppawegkant.sending.Message;
 import cuenen.raymond.java.ppawegkant.processing.DataProcessor;
+import cuenen.raymond.java.ppawegkant.sending.MessageSender;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FilenameFilter;
@@ -110,9 +110,10 @@ public class DirectoryWatcher implements Runnable, FilenameFilter, FileHandler {
         try {
             dataStream = new FileInputStream(file);
             DataProcessor processor = systemData.getType().getDataProcessor();
-            Message message = processor.process(file.getName(), dataStream, systemData);
+            Message message = processor.process(file.getName(), dataStream,
+                    systemData.getIdentification());
             if (message != null) {
-                MainApplication.getApplication().getMessageSender().addMessage(message);
+                MessageSender.getInstance().addMessage(message);
             }
             dataStream.close();
             dataStream = null;
@@ -155,4 +156,3 @@ public class DirectoryWatcher implements Runnable, FilenameFilter, FileHandler {
         } while (toWait > 0L);
     }
 }
-

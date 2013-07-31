@@ -3,8 +3,6 @@ package cuenen.raymond.java.ppawegkant.test;
 import cuenen.raymond.java.ppawegkant.sending.Message;
 import cuenen.raymond.java.ppawegkant.sending.MessageSender;
 import java.util.List;
-import org.junit.After;
-import org.junit.Before;
 import java.io.IOException;
 import java.net.URL;
 import cuenen.raymond.java.test.TestServer;
@@ -30,22 +28,11 @@ public class MessageSenderTest implements TestServer.TestHandler {
     private static final String MESSAGE = "{\"hello\":\"world\"}";
     private Request messageRequest;
     private Thread waitingThread;
-    private MessageSender messageSender;
 
     @BeforeClass
     public static void setUpClass() throws Exception {
         BasicConfigurator.configure();
         System.getProperties().put("message.retryCount", "3");
-    }
-
-    @Before
-    public void setUp() {
-        messageSender = new MessageSender();
-    }
-
-    @After
-    public void tearDown() {
-        messageSender.shutdown();
     }
 
     @Test
@@ -84,10 +71,11 @@ public class MessageSenderTest implements TestServer.TestHandler {
             }
         });
         waitingThread.start();
-        messageSender.addMessage(msg);
+        MessageSender.getInstance().addMessage(msg);
         waitingThread.join();
         server.sutdown();
         validateRequest();
+        MessageSender.getInstance().shutdown();
     }
 
     private void validateRequest() throws Exception {

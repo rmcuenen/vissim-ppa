@@ -1,7 +1,5 @@
 package cuenen.raymond.java.ppawegkant.processing;
 
-import cuenen.raymond.java.ppawegkant.application.MainApplication;
-import cuenen.raymond.java.ppawegkant.configuration.SystemData;
 import cuenen.raymond.java.ppawegkant.sending.Message;
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,7 +25,17 @@ public abstract class DataProcessor {
     private static final String ADDRESS_PREFIX = "ppawegkant/";
     private static final String DATE_TIME_MATCHER = "_[0-9]{8}_[0-9]{6}\\.";
     private static final DateFormat DATE_TIME_FORMATTER = new SimpleDateFormat("_yyyyMMdd_HHmmss.");
+    private static String baseURL;
     protected Logger logger;
+
+    /**
+     * Configureer de basis URL voor het adres.
+     *
+     * @param baseURL het adres van de PPA-bus
+     */
+    public static void setBaseURL(String baseURL) {
+        DataProcessor.baseURL = baseURL;
+    }
 
     /**
      * Creeër de {@link DataProcessor}.
@@ -41,12 +49,12 @@ public abstract class DataProcessor {
      * 
      * @param filename de bestandsnaam
      * @param dataStream de {@link InputStream} naar de bestandsinhoud
-     * @param context de systeem informatie
+     * @param systemId de systeem identificatie
      * @return een nieuw te verzenden bericht
      * @throws IOException wanneer er een fout optreed tijdens de verwerking
      */
     public abstract Message process(String filename,
-            InputStream dataStream, SystemData context) throws IOException;
+            InputStream dataStream, String systemId) throws IOException;
 
     /**
      * Creeër een {@link Message}.
@@ -59,8 +67,7 @@ public abstract class DataProcessor {
         logger.debug("Creeër nieuw bericht voor {}", address);
         try {
             Message msg = new Message();
-            URL url = new URL(MainApplication.getApplication().getBaseURL()
-                    + ADDRESS_PREFIX + address);
+            URL url = new URL(baseURL + ADDRESS_PREFIX + address);
             msg.setAddress(url);
             msg.setContentType(CONTENT_TYPE);
             msg.setMessage(message);

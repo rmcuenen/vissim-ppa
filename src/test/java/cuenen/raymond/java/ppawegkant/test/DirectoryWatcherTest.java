@@ -1,12 +1,13 @@
 package cuenen.raymond.java.ppawegkant.test;
 
+import java.util.concurrent.BlockingQueue;
 import cuenen.raymond.java.ppawegkant.sending.Message;
 import cuenen.raymond.java.ppawegkant.sending.MessageSender;
-import cuenen.raymond.java.ppawegkant.application.MainApplication;
 import java.lang.reflect.Field;
 import cuenen.raymond.java.ppawegkant.configuration.SystemData;
 import cuenen.raymond.java.ppawegkant.watching.DirectoryWatcher;
-import cuenen.raymond.java.ppawegkant.processing.SystemType;
+import cuenen.raymond.java.ppawegkant.configuration.SystemType;
+import cuenen.raymond.java.ppawegkant.processing.DataProcessor;
 import cuenen.raymond.java.test.TestUtil;
 import java.io.File;
 import org.apache.log4j.BasicConfigurator;
@@ -31,16 +32,14 @@ public class DirectoryWatcherTest {
     @BeforeClass
     public static void setUpClass() throws Exception {
         BasicConfigurator.configure();
-        Field baseUrl = MainApplication.class.getDeclaredField("baseURL");
-        baseUrl.setAccessible(true);
-        baseUrl.set(MainApplication.getApplication(), "http://localhost:8080/");
+        DataProcessor.setBaseURL("http://localhost:8080/");
     }
 
     @Test
     public void testDirectoryWatcher() throws Exception {
         File dir = TestUtil.createDir("test" + File.separator + "data");
         SystemData sd = mock(SystemData.class);
-        MessageSender ms = mock(MessageSender.class);
+        BlockingQueue<Message> mq = mock(BlockingQueue.class);
         doAnswer(new Answer<Void>() {
 
             @Override
@@ -48,10 +47,10 @@ public class DirectoryWatcherTest {
                 waitingThread.interrupt();
                 return null;
             }
-        }).when(ms).addMessage(any(Message.class));
-        Field messageSender = MainApplication.class.getDeclaredField("messageSender");
-        messageSender.setAccessible(true);
-        messageSender.set(MainApplication.getApplication(), ms);
+        }).when(mq).put(any(Message.class));
+        Field mqField = MessageSender.class.getDeclaredField("messageQueue");
+        mqField.setAccessible(true);
+        mqField.set(MessageSender.getInstance(), mq);
         when(sd.getIdentification()).thenReturn("TestVRI");
         when(sd.getDirectory()).thenReturn(dir);
         when(sd.getType()).thenReturn(SystemType.VRI);
@@ -78,10 +77,10 @@ public class DirectoryWatcherTest {
         Thread.sleep(500L);
         assertTrue(testFile.exists());
         assertFalse(targetFile.exists());
-        verify(sd, times(4)).getIdentification();
+        verify(sd, times(3)).getIdentification();
         verify(sd).getType();
-        verify(ms).addMessage(any(Message.class));
+        verify(mq).put(any(Message.class));
         verify(sd, times(3)).getDirectory();
-        verifyNoMoreInteractions(sd, ms);
+        verifyNoMoreInteractions(sd, mq);
     }
 }

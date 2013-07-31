@@ -9,6 +9,7 @@
     <description>Een applicatie die een koppeling maakt tussen VISSIM en de PPA-bus.</description>
     <properties>
         <java.version>1.6</java.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <main.class>cuenen.raymond.java.ppawegkant.application.MainApplication</main.class>
         <staging.dir>${project.build.directory}/staging</staging.dir>
     </properties>
@@ -136,6 +137,7 @@
                             <goal>izpack</goal>
                         </goals>
                         <configuration>
+                            <descriptorEncoding>UTF-8</descriptorEncoding>
                             <izpackBasedir>${staging.dir}</izpackBasedir>
                             <installerFile>${project.build.directory}/${project.build.finalName}-installer.jar</installerFile>
                         </configuration>

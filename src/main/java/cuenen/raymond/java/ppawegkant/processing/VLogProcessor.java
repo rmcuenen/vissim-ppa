@@ -1,6 +1,5 @@
 package cuenen.raymond.java.ppawegkant.processing;
 
-import cuenen.raymond.java.ppawegkant.configuration.SystemData;
 import cuenen.raymond.java.ppawegkant.sending.Message;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -31,15 +30,15 @@ public class VLogProcessor extends DataProcessor {
      * {@inheritDoc}
      */
     @Override
-    public Message process(String filename, InputStream dataStream, SystemData context) throws IOException {
-        logger.debug("Verwerking van bestand {} voor {}", filename, context.getIdentification());
+    public Message process(String filename, InputStream dataStream, String systemId) throws IOException {
+        logger.debug("Verwerking van bestand {} voor {}", filename, systemId);
         List<String> vlogContent = new ArrayList<String>();
         BufferedReader reader = new BufferedReader(new InputStreamReader(dataStream));
         String line;
         while ((line = reader.readLine()) != null) {
             vlogContent.add(line);
         }
-        String json = createObject(filename, context.getIdentification(), vlogContent);
+        String json = createObject(filename, systemId, vlogContent);
         return newMessage(ADDRESS, json.getBytes());
     }
 
