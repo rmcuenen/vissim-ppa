@@ -32,18 +32,21 @@ public class RTProcessor extends DataProcessor {
         FIELD_MAP.put("EG_PPA_stroken_RWsa", "");
         FIELD_MAP.put("EG_PPA_doseerint_2", "i_doseer_vth");
         FIELD_MAP.put("EG_PPA_storing", "storing");
-        RT_MAP.put("1", "AAN");
-        RT_MAP.put("2", "AAN");
-        RT_MAP.put("3", "PPA_AAN");
-        RT_MAP.put("4", "AAN");
-        RT_MAP.put("11", "AAN");
-        RT_MAP.put("12", "AAN");
-        RT_MAP.put("13", "PPA_AAN");
-        RT_MAP.put("14", "AAN");
-        RT_MAP.put("31", "UIT");
-        RT_MAP.put("32", "UIT");
-        RT_MAP.put("33", "PPA_UIT");
-        RT_MAP.put("34", "UIT");
+        String aan = "AAN";
+        String uit = "UIT";
+        String ppa = "PPA_";
+        RT_MAP.put("1", aan);
+        RT_MAP.put("2", aan);
+        RT_MAP.put("3", ppa + aan);
+        RT_MAP.put("4", aan);
+        RT_MAP.put("11", aan);
+        RT_MAP.put("12", aan);
+        RT_MAP.put("13", ppa + aan);
+        RT_MAP.put("14", aan);
+        RT_MAP.put("31", uit);
+        RT_MAP.put("32", uit);
+        RT_MAP.put("33", ppa + uit);
+        RT_MAP.put("34", uit);
     }
 
     /**
