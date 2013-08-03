@@ -7,7 +7,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
-import org.slf4j.LoggerFactory;
+import org.codehaus.jackson.JsonGenerator;
 
 /**
  * {@link DataProcessor} implementatie voor de afhandeling
@@ -20,18 +20,20 @@ public class RTProcessor extends DataProcessor {
     private static final String ADDRESS = "data/tdi/regeltoestand";
     private static final Map<String, String> FIELD_MAP = new HashMap<String, String>();
     private static final Map<String, String> RT_MAP = new HashMap<String, String>();
+    private static final String[] FIELDS = {"regeltoestand", "v_rwso_kmh", "v_rwsa_kmh",
+        "i_rwso_vth", "i_rwsa_vth", "i_doseer_vth", "storing"};
 
     static {
         FIELD_MAP.put("EG_PPA_wijziging", "");
-        FIELD_MAP.put("EG_PPA_status_TDI", "regeltoestand");
-        FIELD_MAP.put("EG_PPA_V_RWso", "v_rwso_kmh");
-        FIELD_MAP.put("EG_PPA_V_RWsa", "v_rwsa_kmh");
-        FIELD_MAP.put("EG_PPA_I_RWso", "i_rwso_vth");
-        FIELD_MAP.put("EG_PPA_I_RWsa", "i_rwsa_vth");
+        FIELD_MAP.put("EG_PPA_status_TDI", FIELDS[0]);
+        FIELD_MAP.put("EG_PPA_V_RWso", FIELDS[1]);
+        FIELD_MAP.put("EG_PPA_V_RWsa", FIELDS[2]);
+        FIELD_MAP.put("EG_PPA_I_RWso", FIELDS[3]);
+        FIELD_MAP.put("EG_PPA_I_RWsa", FIELDS[4]);
         FIELD_MAP.put("EG_PPA_stroken_RWso", "");
         FIELD_MAP.put("EG_PPA_stroken_RWsa", "");
-        FIELD_MAP.put("EG_PPA_doseerint_2", "i_doseer_vth");
-        FIELD_MAP.put("EG_PPA_storing", "storing");
+        FIELD_MAP.put("EG_PPA_doseerint_2", FIELDS[5]);
+        FIELD_MAP.put("EG_PPA_storing", FIELDS[6]);
         String aan = "AAN";
         String uit = "UIT";
         String ppa = "PPA_";
@@ -53,7 +55,7 @@ public class RTProcessor extends DataProcessor {
      * Creeër een nieuwe {@link RTProcessor}.
      */
     public RTProcessor() {
-        logger = LoggerFactory.getLogger(RTProcessor.class);
+        super();
     }
 
     /**
@@ -62,7 +64,12 @@ public class RTProcessor extends DataProcessor {
     @Override
     public Message process(String filename, InputStream dataStream, String systemId) throws IOException {
         logger.debug("Verwerking van bestand {} voor {}", filename, systemId);
-        long timestamp = toTimestamp(filename);
+        Message message = newMessage(ADDRESS);
+        JsonGenerator jsonGenerator = jsonFactory.createJsonGenerator(message);
+        jsonGenerator.writeStartObject();
+        jsonGenerator.writeStringField("interface", ADDRESS);
+        jsonGenerator.writeNumberField("timestamp", toTimestamp(filename));
+        jsonGenerator.writeStringField("tdi", systemId);
         Map<String, String> content = new HashMap<String, String>();
         BufferedReader reader = new BufferedReader(new InputStreamReader(dataStream));
         String line;
@@ -73,35 +80,26 @@ public class RTProcessor extends DataProcessor {
                 content.put(field, fields[1].trim());
             }
         }
-        String json = createObject(timestamp, systemId, content);
-        return newMessage(ADDRESS, json.getBytes());
-    }
-
-    /**
-     * Creeër een JSON-string.
-     * 
-     * @param timestamp het tijdstip
-     * @param tdi de systeem identificatie
-     * @param content de bestandsinhoud
-     * @return het JSON-bericht
-     */
-    private String createObject(long timestamp, String tdi, Map<String, String> content) {
-        StringBuilder obj = new StringBuilder();
-        obj.append("{\"interface\":\"").append(ADDRESS).append("\",");
-        obj.append("\"timestamp\":").append(timestamp).append(',');
-        obj.append("\"tdi\":\"").append(tdi).append("\",");
-        String state = RT_MAP.get(content.get("regeltoestand"));
+        String state = RT_MAP.get(content.get(FIELDS[0]));
         if (state == null) {
-            obj.append("\"regeltoestand\":\"ONBEKEND\",");
+            jsonGenerator.writeStringField(FIELDS[0], "ONBEKEND");
         } else {
-            obj.append("\"regeltoestand\":\"").append(state).append("\",");
+            jsonGenerator.writeStringField(FIELDS[0], state);
         }
-        obj.append("\"v_rwso_kmh\":").append(content.get("v_rwso_kmh")).append(',');
-        obj.append("\"v_rwsa_kmh\":").append(content.get("v_rwsa_kmh")).append(',');
-        obj.append("\"i_rwso_vth\":").append(content.get("i_rwso_vth")).append(',');
-        obj.append("\"i_rwsa_vth\":").append(content.get("i_rwsa_vth")).append(',');
-        obj.append("\"i_doseer_vth\":").append(content.get("i_doseer_vth")).append(',');
-        obj.append("\"storing\":[]}");
-        return obj.toString();
+        jsonGenerator.writeFieldName(FIELDS[1]);
+        jsonGenerator.writeNumber(content.get(FIELDS[1]));
+        jsonGenerator.writeFieldName(FIELDS[2]);
+        jsonGenerator.writeNumber(content.get(FIELDS[2]));
+        jsonGenerator.writeFieldName(FIELDS[3]);
+        jsonGenerator.writeNumber(content.get(FIELDS[3]));
+        jsonGenerator.writeFieldName(FIELDS[4]);
+        jsonGenerator.writeNumber(content.get(FIELDS[4]));
+        jsonGenerator.writeFieldName(FIELDS[5]);
+        jsonGenerator.writeNumber(content.get(FIELDS[5]));
+        jsonGenerator.writeArrayFieldStart(FIELDS[6]);
+        jsonGenerator.writeEndArray();
+        jsonGenerator.writeEndObject();
+        jsonGenerator.close();
+        return message;
     }
 }

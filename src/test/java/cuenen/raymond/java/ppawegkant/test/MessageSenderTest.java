@@ -53,7 +53,7 @@ public class MessageSenderTest implements TestServer.TestHandler {
         Message msg = new Message();
         msg.setAddress(new URL("http://localhost:8008/ppawegkant/test/"));
         msg.setContentType("application/json");
-        msg.setMessage(MESSAGE.getBytes());
+        msg.write(MESSAGE.getBytes());
         TestServer server = new TestServer(8008);
         server.addTestHandler(this);
         server.start();

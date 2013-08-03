@@ -1,5 +1,6 @@
 package cuenen.raymond.java.ppawegkant.sending;
 
+import java.io.ByteArrayOutputStream;
 import java.net.URL;
 
 /**
@@ -8,7 +9,7 @@ import java.net.URL;
  * 
  * @author R. Cuenen
  */
-public class Message {
+public class Message extends ByteArrayOutputStream {
 
     private static final int RETRY_COUNT;
 
@@ -24,7 +25,6 @@ public class Message {
     }
     private URL address;
     private String contentType;
-    private byte[] message;
     private int nofRetries = RETRY_COUNT;
 
     /**
@@ -69,25 +69,6 @@ public class Message {
      */
     public String getContentType() {
         return contentType;
-    }
-
-    /**
-     * Stel de berichtinhoud in.
-     * 
-     * @param message de byte-array dat het bericht voorsteld
-     */
-    public void setMessage(byte[] message) {
-        this.message = new byte[message.length];
-        System.arraycopy(message, 0, this.message, 0, message.length);
-    }
-
-    /**
-     * Bekijk de berichtinhoud.
-     * 
-     * @return de byte-array dat het bericht voorsteld
-     */
-    public byte[] getMessage() {
-        return message;
     }
 
     /**

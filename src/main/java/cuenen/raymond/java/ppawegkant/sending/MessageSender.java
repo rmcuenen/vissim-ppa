@@ -106,18 +106,17 @@ public final class MessageSender implements Runnable {
      */
     private void sendMessage(Message message) {
         URL url = message.getAddress();
-        byte[] msg = message.getMessage();
         HttpURLConnection conn = null;
         try {
             logger.debug("Poging een bericht te posten op {}", url);
             conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod(POST_METHOD);
             conn.setRequestProperty(CONTENT_TYPE_KEY, message.getContentType());
-            conn.setRequestProperty(CONTENT_LENGTH_KEY, Integer.toString(msg.length));
+            conn.setRequestProperty(CONTENT_LENGTH_KEY, Integer.toString(message.size()));
             conn.setUseCaches(false);
             conn.setDoOutput(true);
             OutputStream output = conn.getOutputStream();
-            output.write(msg);
+            output.write(message.toByteArray());
             output.flush();
             int response = conn.getResponseCode();
             if (200 != response) {

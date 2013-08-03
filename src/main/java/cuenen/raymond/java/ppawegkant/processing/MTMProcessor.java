@@ -5,10 +5,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
-import org.slf4j.LoggerFactory;
+import org.codehaus.jackson.JsonGenerator;
 
 /**
  * {@link DataProcessor} implementatie voor de afhandeling
@@ -64,7 +62,7 @@ public class MTMProcessor extends DataProcessor {
      * Creeër een nieuwe {@link MTMProcessor}.
      */
     public MTMProcessor() {
-        logger = LoggerFactory.getLogger(MTMProcessor.class);
+        super();
     }
 
     /**
@@ -73,85 +71,66 @@ public class MTMProcessor extends DataProcessor {
     @Override
     public Message process(String filename, InputStream dataStream, String systemId) throws IOException {
         logger.debug("Verwerking van bestand {} voor {}", filename, systemId);
-        long timestamp = toTimestamp(filename);
-        List<String> raaien = new ArrayList<String>();
+        Message message = newMessage(ADDRESS);
+        JsonGenerator jsonGenerator = jsonFactory.createJsonGenerator(message);
+        jsonGenerator.writeStartObject();
+        jsonGenerator.writeStringField("interface", ADDRESS);
+        jsonGenerator.writeNumberField("timestamp", toTimestamp(filename));
+        jsonGenerator.writeArrayFieldStart("raaien");
         BufferedReader reader = new BufferedReader(new InputStreamReader(dataStream));
         String line;
         while ((line = reader.readLine()) != null) {
-            String raai = createRaai(line);
-            if (raai != null) {
-                raaien.add(raai);
-            }
+            createRaai(jsonGenerator, line);
         }
-        String json = createObject(timestamp, raaien);
-        return newMessage(ADDRESS, json.getBytes());
-    }
-
-    /**
-     * Creeër een JSON-string.
-     * 
-     * @param timestamp het tijdstip
-     * @param raaien een lijst met JSON-strings die raaien voorstellen
-     * @return het JSON-bericht
-     */
-    private String createObject(long timestamp, List<String> raaien) {
-        StringBuilder obj = new StringBuilder();
-        obj.append("{\"interface\":\"").append(ADDRESS).append("\",");
-        obj.append("\"timestamp\":").append(timestamp).append(',');
-        obj.append("\"raaien\":[");
-        for (int i = 0; i < raaien.size(); i++) {
-            if (i > 0) {
-                obj.append(',');
-            }
-            obj.append(raaien.get(i));
-        }
-        obj.append("]}");
-        return obj.toString();
+        jsonGenerator.writeEndArray();
+        jsonGenerator.writeEndObject();
+        jsonGenerator.close();
+        return message;
     }
 
     /**
      * Converteer een regel naar een Raai.
      * 
+     * @param jsonGenerator het {@link JsonGenerator} object
      * @param line een regel uit het bestand
-     * @return de Raai als JSON-string
      */
-    private String createRaai(String line) {
+    private void createRaai(JsonGenerator jsonGenerator, String line) throws IOException {
         Scanner s = new Scanner(line);
         try {
-            StringBuilder sb = new StringBuilder();
-            sb.append("{\"raaiId\":\"").append(s.next()).append("\",");
+            jsonGenerator.writeStartObject();
+            jsonGenerator.writeStringField("raaiId", s.next());
             double v = s.nextDouble();
-            sb.append("\"intensiteit_vth\":").append(v == (int) v ? (int) v : v).append(',');
-            s.nextDouble();
-            sb.append("\"snelheid_kmh\":").append(v == (int) v ? (int) v : v).append(',');
-            int laneCount = s.nextInt();
-            sb.append("\"betrokken_rijstroken\":").append(laneCount).append(',');
-            String bps = s.nextLine();
-            List<String> lanes = createLanes(bps, laneCount);
-            sb.append("\"rijstroken\":[");
-            for (int i = 0; i < lanes.size(); i++) {
-                if (i > 0) {
-                    sb.append(',');
-                }
-                sb.append(lanes.get(i));
+            if (v == (int) v) {
+                jsonGenerator.writeNumberField("intensiteit_vth", (int) v);
+            } else {
+                jsonGenerator.writeNumberField("intensiteit_vth", v);
             }
-            sb.append("]}");
-            return sb.toString();
+            v = s.nextDouble();
+            if (v == (int) v) {
+                jsonGenerator.writeNumberField("snelheid_kmh", (int) v);
+            } else {
+                jsonGenerator.writeNumberField("snelheid_kmh", v);
+            }
+            int laneCount = s.nextInt();
+            jsonGenerator.writeNumberField("betrokken_rijstroken", laneCount);
+            createLanes(jsonGenerator, s.nextLine(), laneCount);
+            jsonGenerator.writeEndObject();
+        } catch (IOException ex) { //NOSONAR
+            throw ex;
         } catch (Exception ex) {
             logger.warn("Ongeldinge MTM data-regel: {}", line);
+            throw new IOException("Invalid input", ex);
         }
-        return null;
     }
 
     /**
      * Genereer Rijstrook JSON-objecten voor de gegeven BPS.
      *
+     * @param jsonGenerator het {@link JsonGenerator} object
      * @param bps de plaatsbepalingsstring uit het bestand
      * @param count het aantal rijstroken
-     * @return een lijst met JSON-strings
      */
-    private List<String> createLanes(String bps, int count) {
-        List<String> lanes = new ArrayList<String>();
+    private void createLanes(JsonGenerator jsonGenerator, String bps, int count) throws IOException {
         Scanner s = new Scanner(bps);
         /* RW */
         s.next();
@@ -164,16 +143,17 @@ public class MTMProcessor extends DataProcessor {
         s.next();
         /* WOL */
         Orientation ol = Orientation.valueOf(s.next());
+        jsonGenerator.writeArrayFieldStart("rijstroken");
         for (int i = 0; i < count; i++) {
-            StringBuilder sb = new StringBuilder();
-            sb.append("{\"rijstrooknr\":").append(i + 1).append(',');
-            sb.append("\"status\":\"AAN\",");
+            jsonGenerator.writeStartObject();
+            jsonGenerator.writeNumberField("rijstrooknr", i + 1);
+            jsonGenerator.writeStringField("status", "AAN");
             int lane = ol.getBOL() + i * 4;
             String code = String.format(BPS_CODE, num, distance, ol.getWOL(), lane);
-            sb.append("\"bpscode\":\"").append(code).append("\"}");
-            lanes.add(sb.toString());
+            jsonGenerator.writeStringField("bpscode", code);
+            jsonGenerator.writeEndObject();
         }
-        return lanes;
+        jsonGenerator.writeEndArray();
     }
 
     /**
@@ -192,4 +172,3 @@ public class MTMProcessor extends DataProcessor {
         return Integer.parseInt(bin, 2);
     }
 }
-
