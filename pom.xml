@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>cuenen.raymond.java</groupId>
     <artifactId>vissim-ppa</artifactId>
-    <version>1.0</version>
+    <version>1.1</version>
     <name>VISSIM-PPA Koppeling</name>
     <description>Een applicatie die een koppeling maakt tussen VISSIM en de PPA-bus.</description>
     <properties>

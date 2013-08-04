@@ -19,7 +19,6 @@ public class RTProcessor extends DataProcessor {
 
     private static final String ADDRESS = "data/tdi/regeltoestand";
     private static final Map<String, String> FIELD_MAP = new HashMap<String, String>();
-    private static final Map<String, String> RT_MAP = new HashMap<String, String>();
     private static final String[] FIELDS = {"regeltoestand", "v_rwso_kmh", "v_rwsa_kmh",
         "i_rwso_vth", "i_rwsa_vth", "i_doseer_vth", "storing"};
 
@@ -34,21 +33,6 @@ public class RTProcessor extends DataProcessor {
         FIELD_MAP.put("EG_PPA_stroken_RWsa", "");
         FIELD_MAP.put("EG_PPA_doseerint_2", FIELDS[5]);
         FIELD_MAP.put("EG_PPA_storing", FIELDS[6]);
-        String aan = "AAN";
-        String uit = "UIT";
-        String ppa = "PPA_";
-        RT_MAP.put("1", aan);
-        RT_MAP.put("2", aan);
-        RT_MAP.put("3", ppa + aan);
-        RT_MAP.put("4", aan);
-        RT_MAP.put("11", aan);
-        RT_MAP.put("12", aan);
-        RT_MAP.put("13", ppa + aan);
-        RT_MAP.put("14", aan);
-        RT_MAP.put("31", uit);
-        RT_MAP.put("32", uit);
-        RT_MAP.put("33", ppa + uit);
-        RT_MAP.put("34", uit);
     }
 
     /**
@@ -80,12 +64,7 @@ public class RTProcessor extends DataProcessor {
                 content.put(field, fields[1].trim());
             }
         }
-        String state = RT_MAP.get(content.get(FIELDS[0]));
-        if (state == null) {
-            jsonGenerator.writeStringField(FIELDS[0], "ONBEKEND");
-        } else {
-            jsonGenerator.writeStringField(FIELDS[0], state);
-        }
+        jsonGenerator.writeStringField(FIELDS[0], toStatus(content.get(FIELDS[0])));
         jsonGenerator.writeFieldName(FIELDS[1]);
         jsonGenerator.writeNumber(content.get(FIELDS[1]));
         jsonGenerator.writeFieldName(FIELDS[2]);
@@ -101,5 +80,40 @@ public class RTProcessor extends DataProcessor {
         jsonGenerator.writeEndObject();
         jsonGenerator.close();
         return message;
+    }
+
+    /**
+     * Converteerd een integer-string naar een regelstatus.
+     * 
+     * @param state de integer-string uit het bestand
+     * @return de bijbehorende regeltoestand
+     */
+    private String toStatus(String state) {
+        int status = -1;
+        try {
+            status = Integer.parseInt(state);
+        } catch (Exception ex) {
+            logger.warn("Onbekende status: {}", state);
+        }
+        switch (status) {
+            case 1:
+            case 2:
+            case 4:
+            case 11:
+            case 12:
+            case 14:
+                return "AAN";
+            case 3:
+            case 13:
+                return "PPA_AAN";
+            case 31:
+            case 32:
+            case 34:
+                return "UIT";
+            case 33:
+                return "PPA_UIT";
+            default:
+                return "ONBEKEND";
+        }
     }
 }
