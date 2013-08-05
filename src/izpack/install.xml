@@ -5,7 +5,7 @@
         <appversion>@{project.version}</appversion>
         <appsubpath>@{project.artifactId}</appsubpath>
         <authors>
-            <author name="R. Cuenen" email="raymond.cuenen@gmail.com"/>
+            <author name="R. Cuenen" email=""/>
         </authors>
         <uninstaller write="yes" path="${INSTALL_PATH}"/>
         <javaversion>@{java.version}</javaversion>
