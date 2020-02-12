@@ -1,8 +1,8 @@
 package cuenen.raymond.java.ppawegkant.test;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.Map;
-import org.codehaus.jackson.map.ObjectMapper;
 import cuenen.raymond.java.ppawegkant.sending.Message;
 import java.net.URL;
 import java.io.InputStream;
@@ -113,7 +113,7 @@ public class ProcessorTest {
         map = r.get(0);
         assertEquals(1, map.get("rijstrooknr"));
         assertEquals("AAN", map.get("status"));
-        assertEquals("10D00A036C37D0070007", map.get("bpscode"));
+        assertEquals("10D00AD667800D0070007", map.get("bpscode"));
     }
     
     private Message testProcessor(String id, String filename, SystemType type) throws Exception {

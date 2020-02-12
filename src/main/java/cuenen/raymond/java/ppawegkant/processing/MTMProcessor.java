@@ -1,12 +1,12 @@
 package cuenen.raymond.java.ppawegkant.processing;
 
+import com.fasterxml.jackson.core.JsonGenerator;
 import cuenen.raymond.java.ppawegkant.sending.Message;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Scanner;
-import org.codehaus.jackson.JsonGenerator;
 
 /**
  * {@link DataProcessor} implementatie voor de afhandeling

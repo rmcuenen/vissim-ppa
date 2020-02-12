@@ -33,6 +33,7 @@ public class DirectoryWatcherTest {
     public static void setUpClass() throws Exception {
         BasicConfigurator.configure();
         DataProcessor.setBaseURL("http://localhost:8080/");
+        System.getProperties().put("message.retryCount", "3");
     }
 
     @Test
@@ -50,6 +51,7 @@ public class DirectoryWatcherTest {
         }).when(mq).put(any(Message.class));
         Field mqField = MessageSender.class.getDeclaredField("messageQueue");
         mqField.setAccessible(true);
+        Object currrentMQ = mqField.get(MessageSender.getInstance());
         mqField.set(MessageSender.getInstance(), mq);
         when(sd.getIdentification()).thenReturn("TestVRI");
         when(sd.getDirectory()).thenReturn(dir);
@@ -82,5 +84,6 @@ public class DirectoryWatcherTest {
         verify(mq).put(any(Message.class));
         verify(sd, times(3)).getDirectory();
         verifyNoMoreInteractions(sd, mq);
+        mqField.set(MessageSender.getInstance(), currrentMQ);
     }
 }

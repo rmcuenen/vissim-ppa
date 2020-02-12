@@ -1,5 +1,6 @@
 package cuenen.raymond.java.ppawegkant.processing;
 
+import com.fasterxml.jackson.core.JsonFactory;
 import cuenen.raymond.java.ppawegkant.sending.Message;
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,7 +12,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.codehaus.jackson.JsonFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

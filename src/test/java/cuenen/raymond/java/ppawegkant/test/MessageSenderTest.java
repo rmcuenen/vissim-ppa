@@ -80,7 +80,7 @@ public class MessageSenderTest implements TestServer.TestHandler {
 
     private void validateRequest() throws Exception {
         assertNotNull(messageRequest);
-        assertEquals("localhost", messageRequest.origin);
+        assertEquals("127.0.0.1", messageRequest.origin);
         if (messageRequest.exception != null) {
             fail("Unexpected exception " + messageRequest.exception);
         }

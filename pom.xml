@@ -4,42 +4,50 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>cuenen.raymond.java</groupId>
     <artifactId>vissim-ppa</artifactId>
-    <version>1.1</version>
+    <version>1.2</version>
     <name>VISSIM-PPA Koppeling</name>
     <description>Een applicatie die een koppeling maakt tussen VISSIM en de PPA-bus.</description>
     <properties>
-        <java.version>1.6</java.version>
+        <java.version>11</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <main.class>cuenen.raymond.java.ppawegkant.application.MainApplication</main.class>
         <staging.dir>${project.build.directory}/staging</staging.dir>
+        <jar.file>${project.build.finalName}.jar</jar.file>
+        <app.name>${project.artifactId}</app.name>
+        <app.version>${project.version}</app.version>
     </properties>
     <dependencies>
         <dependency> 
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
-            <version>1.7.5</version>
+            <version>1.7.30</version>
         </dependency>
         <dependency>
-            <groupId>org.codehaus.jackson</groupId>
-            <artifactId>jackson-core-asl</artifactId>
-            <version>1.9.13</version>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>2.10.2</version>
         </dependency>
         <dependency>
-            <groupId>org.codehaus.jackson</groupId>
-            <artifactId>jackson-mapper-asl</artifactId>
-            <version>1.9.13</version>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>jaxb-runtime</artifactId>
+            <version>2.4.0-b180830.0438</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.10.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.powermock</groupId>
             <artifactId>powermock-module-junit4</artifactId>
-            <version>1.4.12</version>
+            <version>2.0.5</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.powermock</groupId>
             <artifactId>powermock-api-mockito</artifactId>
-            <version>1.4.12</version>
+            <version>1.7.4</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -49,17 +57,16 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.4</version>
+                <version>3.8.1</version>
                 <configuration>
                     <fork>true</fork>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
+                    <release>${java.version}</release>
                 </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
-                <version>2.5</version>
+                <version>3.1.0</version>
                 <configuration>
                     <encoding>UTF-8</encoding>
                 </configuration>
@@ -67,7 +74,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>2.4</version>
+                <version>3.2.0</version>
                 <configuration>
                     <archive>
                         <manifest>
@@ -81,14 +88,16 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.12</version>
+                <version>2.22.2</version>
                 <configuration>
-                    <forkMode>always</forkMode>
+                    <argLine>
+                        --illegal-access=permit -Dfile.encoding=UTF-8
+                    </argLine>
                 </configuration>
             </plugin>
             <plugin>
                 <artifactId>maven-antrun-plugin</artifactId>
-                <version>1.7</version>
+                <version>1.8</version>
                 <executions>
                     <execution>
                         <id>create-staging-area</id>
@@ -109,7 +118,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
-                <version>2.0</version>
+                <version>3.1.1</version>
                 <executions>
                     <execution>
                         <id>standard-installer</id>
@@ -128,14 +137,7 @@
             <plugin>
                 <groupId>org.codehaus.izpack</groupId>
                 <artifactId>izpack-maven-plugin</artifactId>
-                <version>1.0-alpha-5</version>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.codehaus.izpack</groupId>
-                        <artifactId>izpack-standalone-compiler</artifactId>
-                        <version>4.3.1</version>
-                    </dependency>
-                </dependencies>
+                <version>5.1.2</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -143,9 +145,11 @@
                             <goal>izpack</goal>
                         </goals>
                         <configuration>
-                            <descriptorEncoding>UTF-8</descriptorEncoding>
-                            <izpackBasedir>${staging.dir}</izpackBasedir>
-                            <installerFile>${project.build.directory}/${project.build.finalName}-installer.jar</installerFile>
+                            <installFile>${basedir}/src/izpack/install.xml</installFile>
+                            <baseDir>${staging.dir}</baseDir>
+                            <outputDirectory>${project.build.directory}</outputDirectory>
+                            <finalName>${project.build.finalName}-installer.jar</finalName>
+                            <enableOverrideArtifact>true</enableOverrideArtifact>
                         </configuration>
                     </execution>
                 </executions>

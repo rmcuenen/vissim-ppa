@@ -93,7 +93,7 @@ public class TestServer extends Thread {
             try {
                 currentClient = null;
                 Socket client = server.accept();
-                currentClient = client.getInetAddress().getHostName();
+                currentClient = client.getInetAddress().getHostAddress();
                 handle(client);
             } catch (IOException ex) {
                 notifyHandlers(ex);

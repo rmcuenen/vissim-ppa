@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<installation version="1.0">
+<installation version="5.0">
     <info>
         <appname>VISSIM-PPA Koppeling</appname>
-        <appversion>@{project.version}</appversion>
-        <appsubpath>@{project.artifactId}</appsubpath>
+        <appversion>@{app.version}</appversion>
+        <appsubpath>@{app.name}</appsubpath>
         <authors>
             <author name="R. Cuenen" email=""/>
         </authors>
@@ -13,7 +13,7 @@
     </info>
  
     <locale>
-        <langpack iso3="ned"/>
+        <langpack iso3="nld"/>
     </locale>
 
     <resources>
@@ -41,7 +41,7 @@
         <pack name="VISSIM-PPA Koppeling" required="yes">
             <description>De benodigde bestanden voor de applicatie</description>
             <fileset dir="dist" targetdir="${INSTALL_PATH}" override="true" excludes="install.xml"/>
-            <file src="../@{project.build.finalName}.jar" 
+            <file src="../@{jar.file}" 
                   targetdir="${INSTALL_PATH}" override="true"/>
         </pack>
     </packs>
